@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %} Settings {% endblock %}
+{% block body %}
+    <section class="no-border-bottom section-sm">
+        <div class="container">
+            <header class="section-header">
+                <span>Settings</span>
+                <h3>Profile settings</h3>
+                <p>Change your name, avatar, location, description, etc.</p>
+            </header>
+
+            <div class="row">
+                <div class="col-xs-12 col-sm-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6>Profile {{ profileview.errors }}</h6>
+                        </div>
+
+                        <div class="card-block">
+                            <form class="form-horizontal" method="post" enctype="multipart/form-data"
+                                  action="{% url 'settings_view' %}">
+                                {% csrf_token %}
+                                {% for field in profileview %}
+                                    <div class="form-group">
+                                        <label for=" {{ field.id_for_label }}">{{ field.label }}:</label>
+                                        {{ field }}
+                                    </div>
+
+                                {% endfor %}
+                                <button type="submit" class="btn btn-success">Save</button>
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                {#            <div class="col-xs-12 col-sm-4">#}
+                {#                <div class="card">#}
+                {#                    <div class="card-header">#}
+                {#                        <h6>Avatar</h6>#}
+                {#                    </div>#}
+                {##}
+                {#                    <div class="card-block">#}
+                {#                        <form method="post" enctype="multipart/form-data">#}
+                {#                            <input type="file" class="dropify" data-default-file="assets/img/avatar-2.jpg"#}
+                {#                                   data-max-height="150" data-max-width="150">#}
+                {#                            <br>#}
+                {#                            <button class="btn btn-primary btn-sm" type="submit">Update</button>#}
+                {#                        </form>#}
+                {#                    </div>#}
+                {#                </div>#}
+                {#            </div>#}
+            </div>
+
+        </div>
+    </section>
+
+
+{% endblock %}

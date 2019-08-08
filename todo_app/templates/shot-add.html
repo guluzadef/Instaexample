@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block body %}
+    <main>
+
+        <section class="no-border-bottom">
+            <div class="container">
+                <header class="section-header">
+                    <span>Upload</span>
+                    <h2>Add shot</h2>
+                    <p>Give a title, upload an image, and write a description to create a shot.</p>
+                </header>
+
+                <form  class="form-horizontal1" method="POST"
+                      enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-sm-12 col-md-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6>{{ post.title }}</h6>
+                                </div>
+                                {% for field in form %}
+                                    <div class="form-group">
+                                        <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
+                                        {{ field }}
+                                        {% if field.errors %}
+                                            {% for msg in field.errors %}
+                                                <span class="text-danger">{{ msg }}</span>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            <button type="submit" class="btn btn-success">Submit</button>
+
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+        {##}
+        {#                    <div class="col-sm-12 col-md-4">#}
+        {##}
+        {#                        <div class="card">#}
+        {#                            <div class="card-header">#}
+        {#                                <h6>Meta data</h6>#}
+        {#                            </div>#}
+        {##}
+        {#                            <div class="card-block">#}
+        {#                                <div class="form-group">#}
+        {#                                    <textarea class="form-control" rows="3" placeholder="Tags..."></textarea>#}
+        {#                                    <span class="help-block">Separate tags with comma</span>#}
+        {#                                </div>#}
+        {##}
+        {#                                <div class="form-group">#}
+        {#                                    <div class="input-group">#}
+        {#                                        <div class="input-group-addon"><i class="fa fa-map-marker"></i></div>#}
+        {#                                        <input type="text" class="form-control" placeholder="Location">#}
+        {#                                    </div>#}
+        {#                                </div>#}
+        {##}
+        {#                                <div class="form-group">#}
+        {#                                    <div class="input-group">#}
+        {#                                        <div class="input-group-addon"><i class="fa fa-bolt"></i></div>#}
+        {#                                        <select class="form-control">#}
+        {#                                            <option>Lisence</option>#}
+        {#                                            <option>GPL</option>#}
+        {#                                            <option>MIT</option>#}
+        {#                                            <option>Apache</option>#}
+        {#                                            <option>BSD</option>#}
+        {#                                            <option>CC0</option>#}
+        {#                                            <option>Other</option>#}
+        {#                                        </select>#}
+        {#                                    </div>#}
+        {#                                </div>#}
+        {##}
+        {#                                <div class="form-group">#}
+        {#                                    <div class="input-group">#}
+        {#                                        <div class="input-group-addon"><i class="fa fa-arrows"></i></div>#}
+        {#                                        <input type="text" class="form-control" placeholder="Aspect ratio, i.e. 4:3">#}
+        {#                                    </div>#}
+        {#                                </div>#}
+        {##}
+        {#                            </div>#}
+        {#                        </div>#}
+        {##}
+        {#                        <button class="btn btn-primary btn-block" type="submit">Submit shot</button>#}
+        {##}
+        {#                    </div>#}
+        {#                </div>#}
+        {#            </form>#}
+        {##}
+        {#        </div>#}
+
+
+    </main>
+{% endblock %}

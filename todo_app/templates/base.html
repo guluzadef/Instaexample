@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="theshots is a directory listing template.">
+    <meta name="keywords" content="">
+
+    <title>{% block title %} {% endblock %}</title>
+
+    <!-- Styles -->
+    <link href="{% static 'css/app.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/custom.css' %}" rel="stylesheet">
+
+    <!-- Fonts -->
+    <link href='https://fonts.googleapis.com/css?family=Raleway:100,300,400,500,600,800%7COpen+Sans:300,400,500,600,700,800%7CMontserrat:400,700'
+          rel='stylesheet' type='text/css'>
+
+    <!-- Favicons -->
+    <link rel="icon" href="assets/img/favicon.ico">
+</head>
+
+<body class="sticky-nav">
+
+<!-- Navigation bar -->
+<nav class="navbar">
+    <div class="container">
+
+        <!-- Logo and navigation links -->
+        <div class="pull-left">
+            <a class="navbar-toggle" href="#" data-toggle="offcanvas"><i class="ti-menu"></i></a>
+
+            <div class="logo">
+                <a href="{% url 'explore' %}"><img src="{{ mainicon.image.url }}" alt="logo"></a>
+            </div>
+            {% if   request.user.is_authenticated %}
+
+                <ul class="nav-menu">
+
+                    {% for menyu in menu %}
+                        <li>
+                            <a class="active" href="{{ menyu.url }}">{{ menyu.title }}</a>
+                        </li>
+                    {% endfor %}
+
+                </ul>
+            {% endif %}
+        </div>
+        {% if   request.user.is_authenticated %}
+
+            <div class="pull-right">
+            <a class="btn-navbar search-opener" href="#"><i class="ti-search"></i></a>
+            <a class="btn-navbar" href="{% url 'addpost_view' %}"><i class="ti-plus"></i></a>
+
+            <div class="dropdown user-account">
+
+                <a class="dropdown-toggle" href="#" data-toggle="dropdown">
+                    <img src="{{ request.user.profilephoto.url }}" alt="avatar">
+                </a>
+                <ul class="dropdown-menu dropdown-menu-right">
+                    <li><a href="{% url 'profile_view' request.user.id %}">Profile</a></li>
+                    <li><a href="{% url 'settings_view' %}">Settings</a></li>
+                    <li><a href="{% url 'logout_view' %}">Logout</a></li>
+                </ul>
+            </div>
+        {% endif %}
+
+
+        </div>
+        <!-- END User account and action buttons -->
+
+        <!-- Search screen -->
+        {#        <div class="search-screen closed">#}
+        {#            <button class="search-closer"><i class="ti-close"></i></button>#}
+        {#            <form class="search-form" action="http://thetheme.io/theshots/page-search.html">#}
+        {#                <input type="text" autocomplete="off" placeholder="Type to search...">#}
+        {#            </form>#}
+        {#        </div>#}
+        <!-- END Search screen -->
+
+    </div>
+</nav>
+{% block body %}
+
+{% endblock %}
+
+
+
+
+
+
+
+<!-- Site footer -->
+<footer class="site-footer no-margin-top">
+
+    <!-- Top section -->
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 col-md-5">
+                <h6>{{ footer.title }}</h6>
+                <p class="text-justify">{{ footer.description }}</p>
+            </div>
+            {% for name in footerfields %}
+                <div class="col-xs-12 col-sm-4 col-md-2">
+                    <h6>{{ name.title }}</h6>
+                    <ul class="footer-links">
+                        {% for menu in name.footermenu_set.all %}
+                            <li><a href="{{ menu.url }}">{{ menu.fields }}</a></li>
+
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endfor %}
+            <hr>
+        </div>
+        <hr>
+        <hr>
+        <!-- END Top section -->
+
+        <!-- Bottom section -->
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 col-sm-6 col-xs-12">
+                    <p class="copyright-text">{{ footername.title }}.</p>
+                </div>
+
+                <div class="col-md-4 col-sm-6 col-xs-12">
+
+                    <ul class="social-icons">
+                        {% for icon in footericon %}
+
+                            <li><a href="{{ icon.url }}"><i class="{{ icon.icon }}"></i></a></li>
+                        {% endfor %}
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Bottom section -->
+
+</footer>
+<!-- END Site footer -->
+
+
+<!-- Back to top button -->
+<a id="scroll-up" href="#"><i class="ti-angle-up"></i></a>
+<!-- END Back to top button -->
+
+<!-- Shot description modal -->
+<div id="shot-modal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <a class="close-modal" data-dismiss="modal" href="#"><i class="ti-close"></i></a>
+        <div class="modal-content"></div>
+    </div>
+</div>
+<!-- END Shot description modal -->
+
+
+<!-- Scripts -->
+<script src="{% static 'js/app.min.js' %}"></script>
+<script src="{% static 'js/custom.js' %}"></script>
+<script>
+    $(document).ready(function () {
+        $('.img').click(function () {
+            var id = $(this).attr('id')
+            var data_url = $(this).attr('data-url')
+            console.log(data_url)
+            $.ajax({
+                method: 'GET',
+                url: data_url,
+                data: {
+                    id: id
+                },
+                success: function (data) {
+                    $('.modal-content').html(data)
+                    console.log("sadsadasd")
+                }
+            })
+        })
+    })
+</script>
+
+
+</body>
+
+</html>
+
+

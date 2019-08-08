@@ -1,0 +1,256 @@
+<!-- END Navigation bar -->
+
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Home {% endblock %}
+{% block body %}
+    {% if messages %}
+
+        {% for message in messages %}
+            <div class="alert alert-success">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+
+    {% endif %}
+
+    {% if  not request.user.is_authenticated %}
+
+        {% for item in main %}
+            <header class="site-header color-alt overlay-black bg-fixed"
+                    style="background-image:url('{{ item.image.url }}')">
+            <div class="container">
+            <div class="col-xs-12 col-sm-6 col-md-7 col-lg-8">
+                <h1><strong>{{ item.title }}</strong></h1>
+                <h4>{{ item.description }}</h4>
+                <br>
+                <p class="hidden-xs">{{ item.about }}</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        {% if request.user.backgroundphoto %}
+            <header class="site-header color-alt overlay-black bg-fixed"
+                    style="background-image:url('{{ request.user.backgroundphoto.url }}')">
+
+        {% else %}
+            <header class="site-header color-alt overlay-black bg-fixed"
+                    style="background-image:url('{{ main.image.url }}')">
+
+
+        {% endif %}
+        <div class="container">
+        <div class="col-xs-12 col-sm-6 col-md-7 col-lg-8">
+            <h1><strong>{{ request.user.first_name }}</strong></h1>
+            <br>
+            <p class="hidden-xs">{{ request.user.location }}</p>
+        </div>
+    {% endif %}
+{% if  not request.user.is_authenticated %}
+
+    <div class="col-xs-12 col-sm-6 col-md-5 col-lg-4 header-form-wrapper">
+        <form class="header-form form-second" action="{% url 'register_view' %}" method="post"
+              enctype="multipart/form-data">
+            {% csrf_token %}
+            {% for field in form %}
+                {% if field.name == "fullname" %}
+                    <div class="form-group">
+                        <label style="color: #d0d0d0" for=" {{ field.id_for_label }}">{{ field.label }}:</label>
+                        {{ field }}
+                    </div>
+                    {% if field.errors %}
+                        {% for msg in field.errors %}
+                            <span class="text-danger">{{ msg }}</span>
+                        {% endfor %}
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+            {% for field in form %}
+                {% if field.name != "fullname" %}
+                    <div class="form-group">
+                        <label style="color: #d0d0d0" for=" {{ field.id_for_label }}">{{ field.label }}:</label>
+                        {{ field }}
+                    </div>
+                {% endif %}
+                {% if field.errors %}
+                    {% for msg in field.errors %}
+                        <span class="text-danger">{{ msg }}</span>
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+
+            <br>
+
+            <div class="row">
+                <div class="col-xs-6">
+                    <button class="btn btn-primary btn-block" type="submit">Register</button>
+                </div>
+                <div class="col-xs-6">
+                    <a class="btn btn-link toggle-form-visibility" href="#">or LOGIN</a>
+                </div>
+            </div>
+        </form>
+
+        <form class="header-form visible" method="post" action="{% url 'login_view' %}">
+            {% csrf_token %}
+            {% for field in loginform %}
+                <div class="form-group">
+                    <label style="color: black" for=" {{ field.id_for_label }}">{{ field.label }}:</label>
+                    {{ field }}
+                </div>
+                {% if field.errors %}
+                    {% for msg in field.errors %}
+                        <span class="text-danger">{{ msg }}</span>
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+
+
+            <p><a href="user-forget-pass.html">Forgot your password?</a></p>
+
+            <div class="row">
+                <div class="col-xs-6">
+                    <button class="btn btn-primary btn-block" type="submit">Login</button>
+                </div>
+                <div class="col-xs-6">
+                    <a class="btn btn-link toggle-form-visibility" href="#">or Register</a>
+                </div>
+            </div>
+            <hr>
+
+            <h6 class="text-uppercase no-margin-top text-center">
+                <small>Login with</small>
+            </h6>
+            <div class="row">
+                <div class="col-xs-4">
+                    <a class="btn btn-facebook btn-sm btn-block" href="#"><i class="fa fa-facebook"></i></a>
+                </div>
+
+                <div class="col-xs-4">
+                    <a class="btn btn-twitter btn-sm btn-block" href="#"><i class="fa fa-twitter"></i></a>
+                </div>
+
+                <div class="col-xs-4">
+                    <a class="btn btn-google btn-sm btn-block" href="#"><i class="fa fa-google"></i></a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    </div>
+{% endif %}
+</header>
+    <!-- END Site header -->
+
+
+    <!-- Main container -->
+    <main>
+
+
+        <!-- Staff pick -->
+        <section>
+            <div class="container">
+                <header class="section-header">
+                    <span>{{ portfolio.name }}</span>
+                    <h2>{{ portfolio.title }}</h2>
+                    <p>{{ portfolio.description }}</p>
+                </header>
+
+                <div class="row">
+
+                    <!-- Shot -->
+                    {% for img in portfoliophoto %}
+                        <div class="col-xs-12 col-sm-6 col-md-4">
+                            <div class="shot shot-small">
+                                <div class="shot-preview">
+                                    <a class="img" href="#"><img src="{{ img.image.url }}" style="height:150px"
+                                                                 alt=""></a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <div class="col-xs-12 col-sm-4 col-md-offset-4">
+                        <br><br>
+                        {#                    <a class="btn btn-primary btn-block" href="explore-style3-cols3.html">See all</a>#}
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+        <!-- END Staff pick -->
+
+
+        <!-- Features -->
+        <section class="bg-white">
+            <div class="container">
+
+                <header class="section-header">
+                    <span>{{ features.name }}</span>
+                    <h2>{{ features.title }}</h2>
+                    <p> {{ features.description }}</p>
+                </header>
+
+
+                <ul class="features">
+                    {% for main in featuresmain %}
+                        <li>
+                            <div class="icon"><i class="fa {{ main.icon }}"></i></div>
+                            <h5>{{ main.icontitle }}</h5>
+                            <p class="text-justify">{{ main.icondescription }}</p>
+                        </li>
+                    {% endfor %}
+
+                </ul>
+
+
+            </div>
+        </section>
+        <!-- END Features -->
+
+
+        <!-- How it works -->
+
+        <!-- END How it works -->
+
+
+        <!-- Facts -->
+        <section class="no-border-bottom overlay-black" style="background-image: url('{{ aboutsite.image.url }}')">
+            <div class="container">
+
+                <div class="row">
+                    <div class="counter color-alt col-md-3 col-sm-6">
+                        <i class="fa fa-camera"></i>
+                        <p><span data-from="0" data-to="6890"></span>+</p>
+                        <h6>Shots</h6>
+                    </div>
+
+                    <div class="counter color-alt col-md-3 col-sm-6">
+                        <i class="fa fa-user"></i>
+                        <p><span data-from="0" data-to="1200"></span>+</p>
+                        <h6>Members</h6>
+                    </div>
+
+                    <div class="counter color-alt col-md-3 col-sm-6">
+                        <i class="fa fa-heart"></i>
+                        <p><span data-from="0" data-to="36800"></span>+</p>
+                        <h6>Likes</h6>
+                    </div>
+
+                    <div class="counter color-alt col-md-3 col-sm-6">
+                        <i class="fa fa-comment"></i>
+                        <p><span data-from="0" data-to="15400"></span>+</p>
+                        <h6>Comments</h6>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+        <!-- END Facts -->
+
+
+    </main>
+{% endblock %}
+<!-- END Main container -->
+
+

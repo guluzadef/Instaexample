@@ -6,21 +6,21 @@
         <!-- Profile head -->
         <div class="profile-head">
             <div class="container">
-{#                {% if user.id.profilephoto %}#}
-                    <a href="user-profile.html"><img src="{{ user.profilephoto.url }}" ></a>
-{#                {% else %}#}
-{#                    <a href="user-profile.html"><img src="{% static 'img/avatar-1.jpg' %}" ></a>#}
+                {#                {% if user.id.profilephoto %}#}
+                <a href="user-profile.html"><img src="{{ user.profilephoto.url }}"></a>
+                {#                {% else %}#}
+                {#                    <a href="user-profile.html"><img src="{% static 'img/avatar-1.jpg' %}" ></a>#}
 
 
-{#                {% endif %}#}
+                {#                {% endif %}#}
                 <h5>{{ user.first_name }} {{ user.last_name }}</h5>
                 <p><i class="fa fa-map-marker"></i> {{ user.location }}</p>
                 <p class="lead">{{ user.headline }}</p>
                 <p>{{ user.about }}</p>
 
                 <ul class="social-icons">
-                    <li><a class="facebook" href="#"><i class="fa fa-facebook"></i></a></li>
-                    <li><a class="twitter" href="#"><i class="fa fa-twitter"></i></a></li>
+                    <li><a class="facebook" href="{{ socialmodel.facebook }}"><i class="fa fa-facebook"></i></a></li>
+                    <li><a class="twitter" href="{{ socialmodel.twitter }}"><i class="fa fa-twitter"></i></a></li>
                     <li><a class="dribbble" href="#"><i class="fa fa-dribbble"></i></a></li>
                     <li><a class="linkedin" href="#"><i class="fa fa-linkedin"></i></a></li>
                     <li><a class="instagram" href="#"><i class="fa fa-instagram"></i></a></li>
@@ -34,8 +34,10 @@
                         </ul>
                     {% endif %}
                     <ul class="col-sm-12 col-md-6 tab-list">
-                        <li class="active"><a href="user-profile.html"><i>Shots</i><span>125</span></a></li>
-                        <li class="hidden-xs"><a href="user-profile.html"><i>Likes</i><span>1.6K</span></a></li>
+                        <li class="active"><a href="user-profile.html"><i>Shots</i><span>{{ count }}</span></a></li>
+                        <li class="hidden-xs"><a
+                                href="user-profile.html"><i>Likes</i><span>{{ request.user.like_set.all.count }}</span></a>
+                        </li>
                         <li><a href="user-followers.html"><i>Followers</i><span>2.3K</span></a></li>
                         <li><a href="user-followers-2.html"><i>Following</i><span>279</span></a></li>
                     </ul>
@@ -48,9 +50,7 @@
 
         <section>
             <div class="container">
-                <header class="section-header">
-                    <h3>Today</h3>
-                </header>
+
 
                 <div class="row">
 
@@ -65,9 +65,10 @@
                             <div class="shot">
 
                                 <div class="shot-preview">
-                                    <a class="img" href="shot-gallery.html"><img src="{{ item.image.url }}"
-                                                                                 style="width: 360px; height: 270px;"
-                                                                                 alt=""></a>
+                                    <a class="img" data-url={% url 'detail' item.id %} id={{ item.id }}><img
+                                            src="{{ item.image.url }}"
+                                            style="width: 360px; height: 270px;"
+                                            alt=""></a>
                                     <h5 class="title"><a href="shot-gallery.html">{{ item.description }}</a></h5>
                                     <a class="label" href="page-search.html">App</a>
                                 </div>
@@ -82,11 +83,18 @@
                                     </div>
 
                                     <ul class="shot-stats">
-                                        <li><i class="fa fa-eye"></i><span>6.3k</span></li>
-                                        <li><a href="shot-gallery.html#comments"><i
-                                                class="fa fa-comments"></i><span>328</span></a>
+                                        <li><i class="fa fa-eye"></i><span>{{ item.view.all.count }}</span></li>
+                                        <li><a href="#comments"><i
+                                                class="fa fa-comments"></i><span>{{ item.commentpost_set.all.count }}</span></a>
                                         </li>
-                                        <li><a class="like" href="#"><i class="fa fa-heart-o"></i><span>1.2k</span></a>
+                                        <li><a class="like" data-id="{{ item.id }}" data-attr="data-id" href="#">
+                                            {% if request.user in item.get_likers %}
+                                                <i class="fa fa-heart likebutton-{{ item.id }}"></i>
+                                            {% else %}
+                                                <i class="fa fa-heart-o likebutton-{{ item.id }}"></i>
+                                            {% endif %}  <span
+                                                class="like-{{ item.id }}">{{ item.like_set.all.count }}</span></a>
+                                        </li>
                                         </li>
                                     </ul>
                                 </div>
@@ -101,8 +109,28 @@
                 </div>
 
                 <br><br>
+                <ul class="pagination">
+                    {% if dashboard.has_previous %}
+                        <li class="page-item disabled"><a class="page-link"
+                                                          href="?page={{ dashboard.previous_page_number }}">Previous</a>
+                        </li>
+                    {% endif %}
 
+                    {% for page in page_range %}
+                        {% if page == dashboard.number %}
+                            <li class="page-item active"><a class="page-link" href="?page={{ page }}">{{ page }}</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item"><a class="page-link" href="?page={{ page }}">{{ page }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if dashboard.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ dashboard.next_page_number }}">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
             </div>
+
         </section>
         {#        <section class="no-border-bottom section-sm">#}
         {#            <div class="container">#}

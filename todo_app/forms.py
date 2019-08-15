@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from custom_user.models import MyUser
-from .models import Post
+from .models import Post,CommentPost,Socialsetting
 
 
 class RegisterForm(forms.ModelForm):
@@ -86,3 +86,28 @@ class PostForm(forms.ModelForm):
             })
 
         }
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model=CommentPost
+        fields=["comment"]
+
+
+
+class SocialForm(forms.ModelForm):
+    class Meta:
+        model=Socialsetting
+        fields=["website","facebook","twitter"]
+        widgets = {
+            "website": forms.TextInput(attrs={
+
+                "class": "form-control"
+            }),
+            "facebook": forms.TextInput(attrs={
+                "class": "form-control"
+            }),
+            "twitter": forms.TextInput(attrs={
+                "class": "form-control"
+            }),
+        }
+
+

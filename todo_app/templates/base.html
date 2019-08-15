@@ -182,6 +182,55 @@
         })
     })
 </script>
+<script>
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+    $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+            }
+        }
+    });
+    $(document).ready(function (e) {
+        $(".like").click(function (e) {
+            var currentpost_id = $(this).attr("data-id");
+            var likebutton = $(".likebutton-" + currentpost_id);
+            var like_count = $(".like-" + currentpost_id);
+            var form = new FormData();
+            form.append("post_id", currentpost_id);
+            $.ajax({
+                url: "{% url 'like-view' %}",
+                method: "POST",
+                processData: false,
+                contentType: false,
+                data: form,
+
+                success: function (data) {
+                    console.log(data);
+                    $(".like-" + currentpost_id).text(data.like_count);
+                    if (data.status) {
+                        likebutton.addClass("fa-heart");
+                        likebutton.removeClass("fa-heart-o");
+
+                    } else {
+                        likebutton.removeClass("fa-heart");
+                        likebutton.addClass("fa-heart-o");
+                    }
+                },
+                error: function (xhr, msg, text) {
+                    console.log(xhr, msg, text);
+                }
+
+            })
+        })
+
+
+    })
+</script>
 
 
 </body>

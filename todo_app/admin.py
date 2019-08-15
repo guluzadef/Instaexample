@@ -15,6 +15,12 @@ admin.site.register(Footericon)
 admin.site.register(AboutSite)
 admin.site.register(Post)
 admin.site.register(Verification)
+admin.site.register(Socialsetting)
+admin.site.register(Profileicon)
+
+
+admin.site.register(Like)
+
 
 
 

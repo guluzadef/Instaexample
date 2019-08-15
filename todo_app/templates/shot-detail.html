@@ -1,8 +1,9 @@
+{% load widget_tweaks %}
 <section class="no-border-bottom section-sm">
     <div class="container-fluid">
         <header class="section-header">
             <h3>{{ currentpost.title }}</h3>
-            <p>{{currentpost.date}} <a href="user-profile.html">{{currentpost.user}}</a></p>
+            <p>{{ currentpost.date }} <a href="user-profile.html">{{ currentpost.user }}</a></p>
         </header>
 
         <div class="row">
@@ -22,80 +23,44 @@
 
                         <hr>
 
-                        <p>{{currentpost.description}}.</p>
+                        <p>{{ currentpost.description }}.</p>
 
 
                     </div>
                 </div>
                 <!-- END Shot and details -->
-
-
                 <!-- Comments -->
                 <div id="comments" class="card">
                     <div class="card-header">
-                        <h6>Comments (45)</h6>
-
+                        <h6>Comments (<span class="cm_count">{{ current_post_comment.count }}</span>)</h6>
                         <div class="comment-pagination">
                             <a class="prev" href="#"><i class="ti-angle-left"></i></a>
                             <a class="next" href="#"><i class="ti-angle-right"></i></a>
                         </div>
                     </div>
-
                     <ul class="comments">
-                        <li>
-                            <a href="user-profile.html"><img src="assets/img/avatar-1.jpg" alt=""></a>
-                            <h6><a href="user-profile.html">Jose</a>
-                                <time datetime="2016-02-04 22:30">14 hours ago</time>
-                            </h6>
-                            <p>Nam tincidunt diam id nisl accumsan molestie.</p>
-                        </li>
+                        {% for i in current_post_comment %}
+                            <li>
+                                <a href=" {% url 'profile_view' i.user.id %} "><img
+                                        src="{{ i.user.profilephoto.url }}" alt=""></a>
+                                <h6><a href="">{{ i.user }}</a>
+                                    <time datetime="{{ i.date }}">{{ i.date|timesince }}</time>
+                                </h6>
+                                <p>{{ i.comment }}</p>
+                            </li>
+                        {% endfor %}
 
-                        <li>
-                            <a href="user-profile.html"><img src="assets/img/avatar-5.jpg" alt=""></a>
-                            <h6><a href="user-profile.html">Dumduri</a>
-                                <time datetime="2016-02-04 22:30">1 days ago</time>
-                            </h6>
-                            <p>Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
-                                Praesent scelerisque porta bibendum. Mauris ac libero convallis, facilisis diam quis,
-                                porta lorem. Aenean suscipit risus a faucibus porta.</p>
-                        </li>
-
-
-                        <li>
-                            <a href="user-profile.html"><img src="{{ currentpost.user.profilephoto }}" alt=""></a>
-                            <h6><a href="user-profile.html">Jose</a>
-                                <time datetime="2016-02-04 22:30">1 week ago</time>
-                            </h6>
-                            <p>Ut pulvinar libero tortor, laoreet suscipit tellus varius nec. In tristique pretium leo
-                                sed accumsan. Mauris ac ex lectus. Fusce vitae imperdiet diam.</p>
-                        </li>
-
-                        <li>
-                            <a href="user-profile.html"><img src="assets/img/avatar-5.jpg" alt=""></a>
-                            <h6><a href="user-profile.html">Dumduri</a>
-                                <time datetime="2016-02-04 22:30">1 week ago</time>
-                            </h6>
-                            <p>Ut pulvinar libero tortor, laoreet suscipit tellus varius nec. In tristique pretium leo
-                                sed accumsan.</p>
-                        </li>
-
-                        <li>
-                            <a href="user-profile.html"><img src="assets/img/avatar-3.jpg" alt=""></a>
-                            <h6><a href="user-profile.html">Mary</a>
-                                <time datetime="2016-02-04 22:30">2 weeks ago</time>
-                            </h6>
-                            <p>Ut pulvinar libero tortor, laoreet suscipit tellus varius nec. Mauris ac ex lectus. Fusce
-                                vitae imperdiet diam.</p>
-                        </li>
                     </ul>
-
                     <form class="comment-form">
-                        <img src="assets/img/avatar-2.jpg" alt="">
-                        <p><input type="text" class="form-control" placeholder="Leave a comment..."></p>
+                        <img src="{{ request.user.profilephoto.url }}" alt="">
+                        <p>
+                            {% for i in form %}
+                                {% render_field i class="form-control" placeholder='Your comment' id='comment' %}
+                            {% endfor %}
+                        </p>
                     </form>
-
                 </div>
-                <!-- END Comments -->
+
 
             </div>
 
@@ -103,13 +68,15 @@
                 <!-- User widget -->
                 <div class="sidebar-block">
                     <div class="shot-by-widget">
-                        <a href="{% url 'profile_view' currentpost.user.id  %}"><img src="{{currentpost.user.profilephoto.url}}" ></a>
+                        <a href="{% url 'profile_view' currentpost.user.id %}"><img
+                                src="{{ currentpost.user.profilephoto.url }}"></a>
                         <a class="username" href="user-profile.html">Facebook</a>
                         <p class="title">{{ currentpost.user.headline }}</p>
                         <p class="subtitle">{{ currentpost.user.about }}</p>
 
                         <ul class="user-stats">
-                            <li><a href="user-profile.html"><i>Shots</i><span>125</span></a></li>
+                            <li class="active"><a href="user-profile.html"><i>Shots</i><span><x></x>
+                                {{ count }}</span></a></li>
                             <li><a href="user-followers.html"><i>Followers</i><span>2.3K</span></a></li>
                             <li><a href="user-followers.html"><i>Following</i><span>279</span></a></li>
                         </ul>
@@ -123,38 +90,21 @@
                 <!-- Shot stats -->
                 <div class="sidebar-block">
                     <ul class="single-shot-stats">
-                        <li><i class="fa fa-eye"></i><span>658</span></li>
-                        <li><a class="like" href="#"><i class="fa fa-heart"></i><span>189</span></a></li>
+                        <li><i class="fa fa-eye"></i><span>{{ currentpost.view.all.count }}</span></li>
+                        <li><a class="like" data-id="{{ currentpost.id }}" data-attr="data-id" href="#">
+                            {% if request.user in currentpost.get_likers %}
+                                <i class="fa fa-heart likebutton-{{ currentpost.id }}"></i>
+                            {% else %}
+                                <i class="fa fa-heart-o likebutton-{{ currentpost.id }}"></i>
+                            {% endif %}
+                            <span class="like-{{ currentpost.id }}">{{ currentpost.like_count }}</span></a>
+                        </li>
                     </ul>
                 </div>
                 <!-- END Shot stats -->
 
 
-                <!-- Details -->
-                <div class="sidebar-block">
-                    <h6>Details</h6>
-                    <dl class="half-half">
-                        <dt>Size</dt>
-                        <dd>5472 x 3648</dd>
-
-                        <dt>File size</dt>
-                        <dd>1.1 MB</dd>
-
-                        <dt>File type</dt>
-                        <dd>Jpeg</dd>
-
-                        <dt>Aspect Ratio</dt>
-                        <dd>4:3</dd>
-
-                        <dt>Location</dt>
-                        <dd>Denmark</dd>
-
-                        <dt>License</dt>
-                        <dd>GPL</dd>
-
-                    </dl>
-                </div>
-                <!-- END Details -->
+                Collapse
 
 
                 <!-- Tags -->
@@ -204,3 +154,87 @@
         </div>
     </div>
 </section>
+<script>
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+    $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+            }
+        }
+    });
+    $(document).ready(function (e) {
+        $(".like").click(function (e) {
+            var currentpost_id = $(this).attr("data-id");
+            var likebutton = $(".likebutton-" + currentpost_id);
+            var like_count = $(".like-" + currentpost_id);
+            var form = new FormData();
+            form.append("post_id", currentpost_id);
+            $.ajax({
+                url: "{% url 'like-view' %}",
+                method: "POST",
+                processData: false,
+                contentType: false,
+                data: form,
+
+                success: function (data) {
+                    console.log(data);
+                    $(".like-" + currentpost_id).text(data.like_count);
+                    if (data.status) {
+                        likebutton.addClass("fa-heart");
+                        likebutton.removeClass("fa-heart-o");
+
+                    } else {
+                        likebutton.removeClass("fa-heart");
+                        likebutton.addClass("fa-heart-o");
+                    }
+                },
+                error: function (xhr, msg, text) {
+                    console.log(xhr, msg, text);
+                }
+
+            })
+        })
+
+
+    })
+</script>
+
+<script>
+    $(document).ready(function (e) {
+        $('#comment').focus(function () {
+            var post_id_cm = {{ currentpost.id }}
+                $('.comment-form').submit(function (e) {
+                    e.preventDefault()
+                    var text_comment = $('#comment').val();
+                    $.ajax({
+                        url: '{{ request.path }}',
+                        method: 'POST',
+                        data: {
+                            post_id_cm: post_id_cm,
+                            text_comment: text_comment,
+                        },
+                        success: function (data) {
+                            $('.comments').append(
+                                "<li>" +
+                                `<a href='user-profile.html'><img src='${data.image}' alt=''></a>` +
+                                `<h6><a href='user-profile.html'>${data.user}</a>` +
+                                `<time datetime=${data.create_date}>now</time>` +
+                                "</h6>" +
+                                `<p>${data.text_comment}</p>` +
+                                "</li>"
+                            )
+                            $('.cm_count').text(data.comment_count)
+                            $("#comment").val('')
+                        }
+                    })
+                })
+        })
+    })
+
+
+</script>

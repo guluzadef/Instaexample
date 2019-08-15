@@ -1,6 +1,18 @@
 {% extends "base.html" %}
 {% block title %} Settings {% endblock %}
 {% block body %}
+      <div class="page-links">
+            <div class="container">
+                <div class="pull-left">
+                    <ul class="link-list">
+                        <li><a href="{% url 'settings_view' %}">Profile</a></li>
+                        <li><a href="{% url 'socialsetting' %}">Social medias</a></li>
+                        <li><a href="setting-notification.html">Notification</a></li>
+                        <li><a href="setting-security.html">Security</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     <section class="no-border-bottom section-sm">
         <div class="container">
             <header class="section-header">

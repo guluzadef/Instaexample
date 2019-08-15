@@ -1,9 +1,12 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from .models import *
-from .forms import RegisterForm, LoginForm, PostForm
+from .forms import RegisterForm, LoginForm, PostForm, CommentForm, SocialForm
 from django.contrib import messages
 from django.contrib.auth import get_user_model, authenticate, login, logout
 from custom_user.forms import MyUserChangeForm, MyUserCreationForm
+from django.http import JsonResponse
+from django.core.paginator import Paginator
 
 User = get_user_model()
 
@@ -39,8 +42,10 @@ def home(request):
     context["aboutsite"] = AboutSite.objects.last()
     context["form"] = RegisterForm()
     context["loginform"] = LoginForm()
-
-    return render(request, "index.html", context)
+    if request.user.is_authenticated:
+        return redirect('explore')
+    else:
+        return render(request, "index.html", context)
 
 
 def register_view(request):
@@ -53,7 +58,7 @@ def register_view(request):
             user.set_password(request.POST.get("password1"))
             # user.first_name = request.POST.get("fullname").split()[0]
             # user.last_name = request.POST.get("fullname").split()[1]
-            user.is_active=False
+            user.is_active = False
             user.save()
             messages.success(
                 request, "Emailinizi tesdiqleyin"
@@ -62,6 +67,7 @@ def register_view(request):
             context["form"] = form
 
     return redirect("home")
+
 
 def verify_view(request, token, user_id):
     verify = Verification.objects.filter(token=token, user_id=user_id, expire=False).last()
@@ -76,6 +82,7 @@ def verify_view(request, token, user_id):
         return redirect('settings_view')
     else:
         return redirect('home')
+
 
 def login_view(request):
     if request.method == "POST":
@@ -93,7 +100,7 @@ def login_view(request):
                         request, "Username or Password inValid"
                     )
             return redirect("home")
-        return render(request,"index.html")
+        return render(request, "index.html")
 
 
 def logout_view(request):
@@ -101,8 +108,28 @@ def logout_view(request):
     return redirect("home")
 
 
+def social_settings(request):
+    context = common(request)
+    context["socialmodel"] = Socialsetting.objects.filter(user=request.user).last()
+    context["socialform"] = SocialForm()
+    if request.method == "POST":
+        form = SocialForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.user = request.user
+            user.save()
+            messages.success(
+                request, "Succes"
+            )
+            return redirect('socialsetting')
+
+    return render(request, "setting-socials.html", context)
+
+
+@login_required
 def settings_view(request):
     context = common(request)
+
     # context["profile"] = Profile.objects.filter(user=request.user)
     context["profileview"] = MyUserChangeForm(instance=request.user, initial={
         "fullname": request.user.get_full_name(),
@@ -113,11 +140,6 @@ def settings_view(request):
         form = MyUserChangeForm(request.POST, request.FILES, instance=request.user)
         if form.is_valid():
             form.save()
-            # user.first_name = request.POST.get("fullname").split()[0]
-            # user.last_name = request.POST.get("fullname").split()[1]
-            # user.username=request.POST.get("username")
-            # user.email = request.POST.get("email")
-            # user.save()
             return redirect('home')
         else:
             context["profileview"] = form
@@ -127,23 +149,79 @@ def settings_view(request):
 
 def profile_view(request, id):
     context = common(request)
+    context["socialmodel"] = Socialsetting.objects.filter(user=request.user).last()
     context["user"] = User.objects.filter(id=id).last()
-    context["dashboard"] = Post.objects.filter(user_id=id)
+    context["count"] = Post.objects.filter(user_id=id).all().count()
+    pagination = Paginator(Post.objects.filter(user_id=id), 6)
+    context["dashboard"] = pagination.get_page(request.GET.get('page', 1))
+    context["page_range"] = pagination.page_range
 
     return render(request, "user-profile.html", context)
 
 
 def explore(request):
     context = common(request)
-    context["post"] = Post.objects.all()
+    pagination = Paginator(Post.objects.all(), 6)
+    context["post"] = pagination.get_page(request.GET.get('page', 1))
+    context["page_range"] = pagination.page_range
+    if request.method == "POST" and request.is_ajax():
+        post_id = request.POST.get("post_id")
+        post = Post.objects.filter(id=post_id).last()
+        if post:
+            like = Like.objects.filter(post=post, user=request.user).last()
+            if like:
+                post.like_count -= 1
+                post.save()
+                like.delete()
+                return JsonResponse({
+                    "like_count": post.like_count,
+                    "status": False
+                })
+            else:
+                post.like_count += 1
+                post.save()
+                Like.objects.create(
+                    user=request.user,
+                    post=post
+                )
+
+                return JsonResponse({
+                    "like_count": post.like_count,
+                    "status": True
+                })
     return render(request, "explore-style1.html", context)
 
 
-def dashboard(request):
-    context = common(request)
-    context["dashboard"] = Post.objects.filter(user=request.user)
+def like_view(request):
+    if request.method == "POST" and request.is_ajax():
+        post_id = request.POST.get("post_id")
+        post = Post.objects.filter(id=post_id).last()
+        if post:
+            like = Like.objects.filter(post=post, user=request.user).last()
+            if like:
+                post.like_count -= 1
+                post.save()
+                like.delete()
+                return JsonResponse({
+                    "like_count": post.like_count,
+                    "status": False
+                })
+            else:
+                post.like_count += 1
+                post.save()
+                Like.objects.create(
+                    user=request.user,
+                    post=post
+                )
 
-    return render()
+                return JsonResponse({
+                    "like_count": post.like_count,
+                    "status": True
+                })
+        else:
+            return redirect("explore")
+    else:
+        return redirect("explore")
 
 
 def addpost_view(request):
@@ -163,11 +241,40 @@ def addpost_view(request):
     return render(request, "shot-add.html", context)
 
 
-def ShotDetail(request,id):
-    context={}
+def ShotDetail(request, id):
+    context = {}
+
     id = request.GET.get('id')
+    if id:
+        pass
+    else:
+        id = request.POST.get("post_id_cm")
     current_post = Post.objects.filter(id=id).last()
-    context["currentpost"]=current_post
+    if request.user not in current_post.view.all():
+        current_post.view.add(request.user)
+    context["currentpost"] = current_post
+    me = Post.objects.all().filter(user=current_post.user).count()
+    current_post_comment = current_post.commentpost_set.all()
+    context["current_post_comment"] = current_post_comment
+    context["form"] = CommentForm()
+    if request.method == "POST" and request.is_ajax():
+        post_id_cm = request.POST.get("post_id_cm")
+        if post_id_cm:
+            text_coment = request.POST.get('text_comment')
+            CommentPost.objects.create(
+                user=request.user,
+                comment=text_coment,
+                post=Post.objects.filter(id=post_id_cm).last(),
+            )
+            return JsonResponse({
+                'append': True,
+                'image': request.user.profilephoto.url,
+                'user': request.user.username,
+                'text_comment': text_coment,
+                'comment_count': current_post_comment.count()
+            })
+
+    context["count"] = me
     print(id)
 
     return render(request, 'shot-detail.html', context)

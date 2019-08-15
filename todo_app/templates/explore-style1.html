@@ -5,9 +5,7 @@
         <!-- Shots list -->
         <section>
             <div class="container">
-                <header class="section-header">
-                    <h3>Today</h3>
-                </header>
+
 
                 <div class="row">
 
@@ -22,11 +20,12 @@
                             <div class="shot">
 
                                 <div class="shot-preview">
-                                    <a class="img" id={{ item.id }}  data-url={% url 'detail' item.id %} ><img src="{{ item.image.url }}"
-                                                                                 style="width: 360px; height: 270px;"
-                                                                                 alt=""></a>
+                                    <a class="img" id={{ item.id }}  data-url={% url 'detail' item.id %} ><img
+                                            src="{{ item.image.url }}"
+                                            style="width: 360px; height: 270px;"
+                                            alt=""></a>
                                     <h5 class="title"><a href="shot-gallery.html">{{ item.description }}</a></h5>
-{#                                    <a class="label" href="page-search.html">App</a>#}
+                                    {#                                    <a class="label" href="page-search.html">App</a>#}
                                 </div>
 
                                 <div class="shot-detail">
@@ -39,17 +38,25 @@
                                     </div>
 
                                     <ul class="shot-stats">
-                                        <li><i class="fa fa-eye"></i><span>6.3k</span></li>
-                                        <li><a href="shot-gallery.html#comments"><i
-                                                class="fa fa-comments"></i><span>328</span></a>
+                                        <li><i class="fa fa-eye"></i><span>{{ item.view.all.count }}</span></li>
+                                        <li><a href="#comments"><i
+                                                class="fa fa-comments"></i><span>{{ item.commentpost_set.all.count }}</span></a>
                                         </li>
-                                        <li><a class="like" href="#"><i class="fa fa-heart-o"></i><span>1.2k</span></a>
+
+                                        <li><a class="like" data-id="{{ item.id }}" data-attr="data-id" href="#">
+                                            {% if request.user in item.get_likers %}
+                                                <i class="fa fa-heart likebutton-{{ item.id }}"></i>
+                                            {% else %}
+                                                <i class="fa fa-heart-o likebutton-{{ item.id }}"></i>
+                                            {% endif %}
+                                            <span class="like-{{ item.id }}">{{ item.like_set.all.count }}</span></a>
                                         </li>
                                     </ul>
                                 </div>
                             </div>
                         </div>
                     {% endfor %}
+
                     <!-- END Shot -->
 
 
@@ -60,632 +67,30 @@
                 <br><br>
 
             </div>
+        <ul class="pagination">
+                        {% if post.has_previous %}
+                            <li class="page-item disabled"><a class="page-link"
+                                                              href="?page={{ post.previous_page_number }}">Previous</a>
+                            </li>
+                        {% endif %}
+
+                        {% for page in page_range %}
+                            {% if page == post.number %}
+                                <li class="page-item active"><a class="page-link" href="?page={{ page }}">{{ page }}</a></li>
+                            {% else %}
+                                <li class="page-item"><a class="page-link" href="?page={{ page }}">{{ page }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                        {% if post.has_next %}
+                            <li class="page-item"><a class="page-link" href="?page={{ post.next_page_number }}">Next</a></li>
+                        {% endif %}
+                    </ul>
         </section>
-        <!-- END Shots list -->
 
 
-        {#    <!-- Shots list -->#}
-        {#    <section class="bg-white">#}
-        {#        <div class="container">#}
-        {#            <header class="section-header">#}
-        {#                <span>February 09</span>#}
-        {#                <h3>Yesterday</h3>#}
-        {#            </header>#}
-        {##}
-        {#            <div class="row">#}
-        {##}
-        {#                <!-- Shot -->#}
-        {#                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">#}
-        {#                    <div class="shot">#}
-        {#                        <div class="shot-preview">#}
-        {#                            <a class="img" href="shot-gallery.html"><img src="assets/img/shot-9.jpg" alt=""></a>#}
-        {#                            <h5 class="title"><a href="#">A sample facebook caption</a></h5>#}
-        {#                            <a class="label" href="page-search.html">User Interface</a>#}
-        {#                        </div>#}
-        {##}
-        {#                        <div class="shot-detail">#}
-        {#                            <div class="shot-info">#}
-        {#                                <a href="user-profile.html"><img src="assets/img/avatar-1.jpg" alt="avatar"></a>#}
-        {#                                <h6><a href="user-profile.html">ShaMSofT</a></h6>#}
-        {#                                <time datetime="2016-02-04 22:30">Feb 3</time>#}
-        {#                            </div>#}
-        {##}
-        {#                            <ul class="shot-stats">#}
-        {#                                <li><i class="fa fa-eye"></i><span>6.3k</span></li>#}
-        {#                                <li><a href="shot-gallery.html#comments"><i class="fa fa-comments"></i><span>328</span></a>#}
-        {#                                </li>#}
-        {#                                <li><a class="like" href="#"><i class="fa fa-heart-o"></i><span>1.2k</span></a></li>#}
-        {#                            </ul>#}
-        {#                        </div>#}
-        {#                    </div>#}
-        {#                </div>#}
-        {#                <!-- END Shot -->#}
-        {##}
-        {#                <!-- Shot -->#}
-        {#                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">#}
-        {#                    <div class="shot">#}
-        {#                        <div class="shot-preview">#}
-        {#                            <a class="img" href="shot-gallery.html"><img src="assets/img/shot-7.jpg" alt=""></a>#}
-        {#                            <h5 class="title"><a href="shot-gallery.html">A sample facebook caption</a></h5>#}
-        {#                            <a class="label" href="page-search.html">Event</a>#}
-        {#                        </div>#}
-        {##}
-        {#                        <div class="shot-detail">#}
-        {#                            <div class="shot-info">#}
-        {#                                <a href="user-profile.html"><img src="assets/img/avatar-3.jpg" alt="avatar"></a>#}
-        {#                                <h6><a href="user-profile.html">Dumduri</a></h6>#}
-        {#                                <time datetime="2016-02-04 22:30">Feb 3</time>#}
-        {#                            </div>#}
-        {##}
-        {#                            <ul class="shot-stats">#}
-        {#                                <li><i class="fa fa-eye"></i><span>6.3k</span></li>#}
-        {#                                <li><a href="shot-gallery.html#comments"><i class="fa fa-comments"></i><span>328</span></a>#}
-        {#                                </li>#}
-        {#                                <li><a class="like" href="#"><i class="fa fa-heart-o"></i><span>1.2k</span></a></li>#}
-        {#                            </ul>#}
-        {#                        </div>#}
-        {#                    </div>#}
-        {#                </div>#}
-        {#                <!-- END Shot -->#}
-        {##}
-        {#                <!-- Shot -->#}
-        {#                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">#}
-        {#                    <div class="shot">#}
-        {#                        <div class="shot-preview">#}
-        {#                            <a class="img" href="shot-gallery.html"><img src="assets/img/shot-4.jpg" alt=""></a>#}
-        {#                            <h5 class="title"><a href="shot-gallery.html">A sample facebook caption</a></h5>#}
-        {#                            <a class="label" href="page-search.html">App</a>#}
-        {#                        </div>#}
-        {##}
-        {#                        <div class="shot-detail">#}
-        {#                            <div class="shot-info">#}
-        {#                                <a href="user-profile.html"><img src="assets/img/avatar-2.jpg" alt="avatar"></a>#}
-        {#                                <h6><a href="user-profile.html">Hosi</a></h6>#}
-        {#                                <time datetime="2016-02-04 22:30">Feb 3</time>#}
-        {#                            </div>#}
-        {##}
-        {#                            <ul class="shot-stats">#}
-        {#                                <li><i class="fa fa-eye"></i><span>6.3k</span></li>#}
-        {#                                <li><a href="shot-gallery.html#comments"><i class="fa fa-comments"></i><span>328</span></a>#}
-        {#                                </li>#}
-        {#                                <li><a class="like" href="#"><i class="fa fa-heart-o"></i><span>1.2k</span></a></li>#}
-        {#                            </ul>#}
-        {#                        </div>#}
-        {#                    </div>#}
-        {#                </div>#}
-        {#                <!-- END Shot -->#}
-        {##}
-        {#                <!-- Shot -->#}
-        {#                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">#}
-        {#                    <div class="shot">#}
-        {#                        <div class="shot-preview">#}
-        {#                            <a class="img" href="shot-gallery.html"><img src="assets/img/shot-3.jpg" alt=""></a>#}
-        {#                            <h5 class="title"><a href="shot-gallery.html">A sample facebook caption</a></h5>#}
-        {#                            <a class="label" href="page-search.html">Website</a>#}
-        {#                        </div>#}
-        {##}
-        {#                        <div class="shot-detail">#}
-        {#                            <div class="shot-info">#}
-        {#                                <a href="user-profile.html"><img src="assets/img/avatar-5.jpg" alt="avatar"></a>#}
-        {#                                <h6><a href="user-profile.html">Mary</a></h6>#}
-        {#                                <time datetime="2016-02-04 22:30">Feb 3</time>#}
-        {#                            </div>#}
-        {##}
-        {#                            <ul class="shot-stats">#}
-        {#                                <li><i class="fa fa-eye"></i><span>6.3k</span></li>#}
-        {#                                <li><a href="shot-gallery.html#comments"><i class="fa fa-comments"></i><span>328</span></a>#}
-        {#                                </li>#}
-        {#                                <li><a class="like" href="#"><i class="fa fa-heart-o"></i><span>1.2k</span></a></li>#}
-        {#                            </ul>#}
-        {#                        </div>#}
-        {#                    </div>#}
-        {#                </div>#}
-        {#                <!-- END Shot -->#}
-        {##}
-        {#                <!-- Shot -->#}
-        {#                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">#}
-        {#                    <div class="shot">#}
-        {#                        <div class="shot-preview">#}
-        {#                            <a class="img" href="shot-gallery.html"><img src="assets/img/shot-5.jpg" alt=""></a>#}
-        {#                            <h5 class="title"><a href="shot-gallery.html">A sample facebook caption</a></h5>#}
-        {#                            <a class="label" href="page-search.html">App</a>#}
-        {#                        </div>#}
-        {##}
-        {#                        <div class="shot-detail">#}
-        {#                            <div class="shot-info">#}
-        {#                                <a href="user-profile.html"><img src="assets/img/avatar-4.jpg" alt="avatar"></a>#}
-        {#                                <h6><a href="user-profile.html">Facebook</a></h6>#}
-        {#                                <time datetime="2016-02-04 22:30">Feb 3</time>#}
-        {#                            </div>#}
-        {##}
-        {#                            <ul class="shot-stats">#}
-        {#                                <li><i class="fa fa-eye"></i><span>6.3k</span></li>#}
-        {#                                <li><a href="shot-gallery.html#comments"><i class="fa fa-comments"></i><span>328</span></a>#}
-        {#                                </li>#}
-        {#                                <li><a class="like" href="#"><i class="fa fa-heart-o"></i><span>1.2k</span></a></li>#}
-        {#                            </ul>#}
-        {#                        </div>#}
-        {#                    </div>#}
-        {#                </div>#}
-        {#                <!-- END Shot -->#}
-        {##}
-        {#                <!-- Shot -->#}
-        {#                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">#}
-        {#                    <div class="shot">#}
-        {#                        <div class="shot-preview">#}
-        {#                            <a class="img" href="shot-gallery.html"><img src="assets/img/shot-6.jpg" alt=""></a>#}
-        {#                            <h5 class="title"><a href="shot-gallery.html">A sample facebook caption</a></h5>#}
-        {#                            <a class="label" href="page-search.html">App</a>#}
-        {#                        </div>#}
-        {##}
-        {#                        <div class="shot-detail">#}
-        {#                            <div class="shot-info">#}
-        {#                                <a href="user-profile.html"><img src="assets/img/avatar-1.jpg" alt="avatar"></a>#}
-        {#                                <h6><a href="user-profile.html">ShaMSofT</a></h6>#}
-        {#                                <time datetime="2016-02-04 22:30">Feb 3</time>#}
-        {#                            </div>#}
-        {##}
-        {#                            <ul class="shot-stats">#}
-        {#                                <li><i class="fa fa-eye"></i><span>6.3k</span></li>#}
-        {#                                <li><a href="shot-gallery.html#comments"><i class="fa fa-comments"></i><span>328</span></a>#}
-        {#                                </li>#}
-        {#                                <li><a class="like" href="#"><i class="fa fa-heart-o"></i><span>1.2k</span></a></li>#}
-        {#                            </ul>#}
-        {#                        </div>#}
-        {#                    </div>#}
-        {#                </div>#}
-        {#                <!-- END Shot -->#}
-        {##}
-        {#                <!-- Shot -->#}
-        {#                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">#}
-        {#                    <div class="shot">#}
-        {#                        <div class="shot-preview">#}
-        {#                            <a class="img" href="shot-gallery.html"><img src="assets/img/shot-7.jpg" alt=""></a>#}
-        {#                            <h5 class="title"><a href="shot-gallery.html">A sample facebook caption</a></h5>#}
-        {#                            <a class="label" href="page-search.html">Event</a>#}
-        {#                        </div>#}
-        {##}
-        {#                        <div class="shot-detail">#}
-        {#                            <div class="shot-info">#}
-        {#                                <a href="user-profile.html"><img src="assets/img/avatar-4.jpg" alt="avatar"></a>#}
-        {#                                <h6><a href="user-profile.html">Facebook</a></h6>#}
-        {#                                <time datetime="2016-02-04 22:30">Feb 3</time>#}
-        {#                            </div>#}
-        {##}
-        {#                            <ul class="shot-stats">#}
-        {#                                <li><i class="fa fa-eye"></i><span>6.3k</span></li>#}
-        {#                                <li><a href="shot-gallery.html#comments"><i class="fa fa-comments"></i><span>328</span></a>#}
-        {#                                </li>#}
-        {#                                <li><a class="like" href="#"><i class="fa fa-heart-o"></i><span>1.2k</span></a></li>#}
-        {#                            </ul>#}
-        {#                        </div>#}
-        {#                    </div>#}
-        {#                </div>#}
-        {#                <!-- END Shot -->#}
-        {##}
-        {#                <!-- Shot -->#}
-        {#                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">#}
-        {#                    <div class="shot">#}
-        {#                        <div class="shot-preview">#}
-        {#                            <a class="img" href="shot-gallery.html"><img src="assets/img/shot-8.jpg" alt=""></a>#}
-        {#                            <h5 class="title"><a href="shot-gallery.html">A sample facebook caption</a></h5>#}
-        {#                            <a class="label" href="page-search.html">User Interface</a>#}
-        {#                        </div>#}
-        {##}
-        {#                        <div class="shot-detail">#}
-        {#                            <div class="shot-info">#}
-        {#                                <a href="user-profile.html"><img src="assets/img/avatar-5.jpg" alt="avatar"></a>#}
-        {#                                <h6><a href="user-profile.html">Mari</a></h6>#}
-        {#                                <time datetime="2016-02-04 22:30">Feb 3</time>#}
-        {#                            </div>#}
-        {##}
-        {#                            <ul class="shot-stats">#}
-        {#                                <li><i class="fa fa-eye"></i><span>6.3k</span></li>#}
-        {#                                <li><a href="shot-gallery.html#comments"><i class="fa fa-comments"></i><span>328</span></a>#}
-        {#                                </li>#}
-        {#                                <li><a class="like" href="#"><i class="fa fa-heart-o"></i><span>1.2k</span></a></li>#}
-        {#                            </ul>#}
-        {#                        </div>#}
-        {#                    </div>#}
-        {#                </div>#}
-        {#                <!-- END Shot -->#}
-        {##}
-        {#                <!-- Shot -->#}
-        {#                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">#}
-        {#                    <div class="shot shot-small">#}
-        {#                        <div class="shot-preview">#}
-        {#                            <a class="img" href="shot-gallery.html"><img src="assets/img/shot-9.jpg" alt=""></a>#}
-        {#                            <span class="like"></span>#}
-        {#                        </div>#}
-        {##}
-        {#                        <div class="shot-info">#}
-        {#                            <a href="user-profile.html"><img src="assets/img/avatar-2.jpg" alt="avatar"></a>#}
-        {#                            <h6><a href="#">Donec vulputate justo</a></h6>#}
-        {#                            <p>#}
-        {#                                <time datetime="2016-02-04 22:30">Feb 3</time>#}
-        {#                                in <a href="#">User Interface</a></p>#}
-        {#                        </div>#}
-        {#                    </div>#}
-        {#                </div>#}
-        {#                <!-- END Shot -->#}
-        {##}
-        {#                <!-- Shot -->#}
-        {#                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">#}
-        {#                    <div class="shot shot-small">#}
-        {#                        <div class="shot-preview">#}
-        {#                            <a class="img" href="shot-gallery.html"><img src="assets/img/shot-1.gif" alt=""></a>#}
-        {#                            <span class="like liked"></span>#}
-        {#                        </div>#}
-        {##}
-        {#                        <div class="shot-info">#}
-        {#                            <a href="user-profile.html"><img src="assets/img/avatar-1.jpg" alt="avatar"></a>#}
-        {#                            <h6><a href="#">Donec vulputate justo</a></h6>#}
-        {#                            <p>#}
-        {#                                <time datetime="2016-02-04 22:30">Feb 3</time>#}
-        {#                                in <a href="#">Animation</a></p>#}
-        {#                        </div>#}
-        {#                    </div>#}
-        {#                </div>#}
-        {#                <!-- END Shot -->#}
-        {##}
-        {#                <!-- Shot -->#}
-        {#                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">#}
-        {#                    <div class="shot shot-small">#}
-        {#                        <div class="shot-preview">#}
-        {#                            <a class="img" href="shot-gallery.html"><img src="assets/img/shot-3.jpg" alt=""></a>#}
-        {#                            <span class="like"></span>#}
-        {#                        </div>#}
-        {##}
-        {#                        <div class="shot-info">#}
-        {#                            <a href="user-profile.html"><img src="assets/img/avatar-4.jpg" alt="avatar"></a>#}
-        {#                            <h6><a href="#">Donec vulputate justo</a></h6>#}
-        {#                            <p>#}
-        {#                                <time datetime="2016-02-04 22:30">Feb 3</time>#}
-        {#                                in <a href="#">Event</a></p>#}
-        {#                        </div>#}
-        {#                    </div>#}
-        {#                </div>#}
-        {#                <!-- END Shot -->#}
-        {##}
-        {#                <!-- Shot -->#}
-        {#                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">#}
-        {#                    <div class="shot shot-small">#}
-        {#                        <div class="shot-preview">#}
-        {#                            <a class="img" href="shot-gallery.html"><img src="assets/img/shot-4.jpg" alt=""></a>#}
-        {#                            <span class="like liked"></span>#}
-        {#                        </div>#}
-        {##}
-        {#                        <div class="shot-info">#}
-        {#                            <a href="user-profile.html"><img src="assets/img/avatar-2.jpg" alt="avatar"></a>#}
-        {#                            <h6><a href="#">Donec vulputate justo</a></h6>#}
-        {#                            <p>#}
-        {#                                <time datetime="2016-02-04 22:30">Feb 3</time>#}
-        {#                                in <a href="#">App</a></p>#}
-        {#                        </div>#}
-        {#                    </div>#}
-        {#                </div>#}
-        {#                <!-- END Shot -->#}
-        {##}
-        {#                <!-- Shot -->#}
-        {#                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">#}
-        {#                    <div class="shot shot-small">#}
-        {#                        <div class="shot-preview">#}
-        {#                            <a class="img" href="shot-gallery.html"><img src="assets/img/shot-5.jpg" alt=""></a>#}
-        {#                            <span class="like"></span>#}
-        {#                        </div>#}
-        {##}
-        {#                        <div class="shot-info">#}
-        {#                            <a href="user-profile.html"><img src="assets/img/avatar-3.jpg" alt="avatar"></a>#}
-        {#                            <h6><a href="#">Donec vulputate justo</a></h6>#}
-        {#                            <p>#}
-        {#                                <time datetime="2016-02-04 22:30">Feb 3</time>#}
-        {#                                in <a href="#">App</a></p>#}
-        {#                        </div>#}
-        {#                    </div>#}
-        {#                </div>#}
-        {#                <!-- END Shot -->#}
-        {##}
-        {#                <!-- Shot -->#}
-        {#                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">#}
-        {#                    <div class="shot shot-small">#}
-        {#                        <div class="shot-preview">#}
-        {#                            <a class="img" href="shot-gallery.html"><img src="assets/img/shot-9.jpg" alt=""></a>#}
-        {#                            <span class="like liked"></span>#}
-        {#                        </div>#}
-        {##}
-        {#                        <div class="shot-info">#}
-        {#                            <a href="user-profile.html"><img src="assets/img/avatar-5.jpg" alt="avatar"></a>#}
-        {#                            <h6><a href="#">Donec vulputate justo</a></h6>#}
-        {#                            <p>#}
-        {#                                <time datetime="2016-02-04 22:30">Feb 3</time>#}
-        {#                                in <a href="#">User Interface</a></p>#}
-        {#                        </div>#}
-        {#                    </div>#}
-        {#                </div>#}
-        {#                <!-- END Shot -->#}
-        {##}
-        {#                <!-- Shot -->#}
-        {#                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">#}
-        {#                    <div class="shot shot-small">#}
-        {#                        <div class="shot-preview">#}
-        {#                            <a class="img" href="shot-gallery.html"><img src="assets/img/shot-7.jpg" alt=""></a>#}
-        {#                            <span class="like"></span>#}
-        {#                        </div>#}
-        {##}
-        {#                        <div class="shot-info">#}
-        {#                            <a href="user-profile.html"><img src="assets/img/avatar-1.jpg" alt="avatar"></a>#}
-        {#                            <h6><a href="#">Donec vulputate justo</a></h6>#}
-        {#                            <p>#}
-        {#                                <time datetime="2016-02-04 22:30">Feb 3</time>#}
-        {#                                in <a href="#">Event</a></p>#}
-        {#                        </div>#}
-        {#                    </div>#}
-        {#                </div>#}
-        {#                <!-- END Shot -->#}
-        {##}
-        {#                <!-- Shot -->#}
-        {#                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">#}
-        {#                    <div class="shot shot-small">#}
-        {#                        <div class="shot-preview">#}
-        {#                            <a class="img" href="shot-gallery.html"><img src="assets/img/shot-8.jpg" alt=""></a>#}
-        {#                            <span class="like"></span>#}
-        {#                        </div>#}
-        {##}
-        {#                        <div class="shot-info">#}
-        {#                            <a href="user-profile.html"><img src="assets/img/avatar-4.jpg" alt="avatar"></a>#}
-        {#                            <h6><a href="#">Donec vulputate justo</a></h6>#}
-        {#                            <p>#}
-        {#                                <time datetime="2016-02-04 22:30">Feb 3</time>#}
-        {#                                in <a href="#">Dashboard</a></p>#}
-        {#                        </div>#}
-        {#                    </div>#}
-        {#                </div>#}
-        {#                <!-- END Shot -->#}
-        {##}
-        {#            </div>#}
-        {#            <br><br>#}
-        {#            <p class="text-center"><a class="btn btn-primary btn-round" href="#">Load more</a></p>#}
-        {##}
-        {#        </div>#}
-        {#    </section>#}
-        {#    <!-- END Shots list -->#}
-        {##}
-        {##}
-        {#    <!-- Shots list -->#}
-        {#    <section>#}
-        {#        <div class="container">#}
-        {#            <header class="section-header">#}
-        {#                <span>February 02-08</span>#}
-        {#                <h3>Last week</h3>#}
-        {#            </header>#}
-        {##}
-        {#            <div class="row">#}
-        {##}
-        {#                <!-- Shot -->#}
-        {#                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">#}
-        {#                    <div class="shot">#}
-        {#                        <div class="shot-preview">#}
-        {#                            <a class="img" href="shot-gallery.html"><img src="assets/img/shot-5.jpg" alt=""></a>#}
-        {#                            <h5 class="title"><a href="#">A sample facebook caption with some bla blah</a></h5>#}
-        {#                            <a class="label" href="page-search.html">App</a>#}
-        {#                        </div>#}
-        {##}
-        {#                        <div class="shot-detail">#}
-        {#                            <div class="shot-info">#}
-        {#                                <a href="user-profile.html"><img src="assets/img/avatar-1.jpg" alt="avatar"></a>#}
-        {#                                <h6><a href="user-profile.html">ShaMSofT</a></h6>#}
-        {#                                <time datetime="2016-02-04 22:30">Feb 2</time>#}
-        {#                            </div>#}
-        {##}
-        {#                            <ul class="shot-stats">#}
-        {#                                <li><i class="fa fa-eye"></i><span>6.3k</span></li>#}
-        {#                                <li><a href="shot-gallery.html#comments"><i class="fa fa-comments"></i><span>328</span></a>#}
-        {#                                </li>#}
-        {#                                <li><a class="like" href="#"><i class="fa fa-heart-o"></i><span>1.2k</span></a></li>#}
-        {#                            </ul>#}
-        {#                        </div>#}
-        {#                    </div>#}
-        {#                </div>#}
-        {#                <!-- END Shot -->#}
-        {##}
-        {#                <!-- Shot -->#}
-        {#                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">#}
-        {#                    <div class="shot">#}
-        {#                        <div class="shot-preview">#}
-        {#                            <a class="img" href="shot-gallery.html"><img src="assets/img/shot-6.jpg" alt=""></a>#}
-        {#                            <h5 class="title"><a href="shot-gallery.html">A sample facebook caption</a></h5>#}
-        {#                            <a class="label" href="page-search.html">App</a>#}
-        {#                        </div>#}
-        {##}
-        {#                        <div class="shot-detail">#}
-        {#                            <div class="shot-info">#}
-        {#                                <a href="user-profile.html"><img src="assets/img/avatar-2.jpg" alt="avatar"></a>#}
-        {#                                <h6><a href="user-profile.html">Hosi</a></h6>#}
-        {#                                <time datetime="2016-02-04 22:30">Jan 31</time>#}
-        {#                            </div>#}
-        {##}
-        {#                            <ul class="shot-stats">#}
-        {#                                <li><i class="fa fa-eye"></i><span>6.3k</span></li>#}
-        {#                                <li><a href="shot-gallery.html#comments"><i class="fa fa-comments"></i><span>328</span></a>#}
-        {#                                </li>#}
-        {#                                <li><a class="like" href="#"><i class="fa fa-heart-o"></i><span>1.2k</span></a></li>#}
-        {#                            </ul>#}
-        {#                        </div>#}
-        {#                    </div>#}
-        {#                </div>#}
-        {#                <!-- END Shot -->#}
-        {##}
-        {#                <!-- Shot -->#}
-        {#                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">#}
-        {#                    <div class="shot">#}
-        {#                        <div class="shot-preview">#}
-        {#                            <a class="img" href="shot-gallery.html"><img src="assets/img/shot-2.jpg" alt=""></a>#}
-        {#                            <h5 class="title"><a href="shot-gallery.html">A sample facebook caption</a></h5>#}
-        {#                            <a class="label" href="page-search.html">Animation</a>#}
-        {#                        </div>#}
-        {##}
-        {#                        <div class="shot-detail">#}
-        {#                            <div class="shot-info">#}
-        {#                                <a href="user-profile.html"><img src="assets/img/avatar-3.jpg" alt="avatar"></a>#}
-        {#                                <h6><a href="user-profile.html">Dumduri</a></h6>#}
-        {#                                <time datetime="2016-02-04 22:30">Jan 31</time>#}
-        {#                            </div>#}
-        {##}
-        {#                            <ul class="shot-stats">#}
-        {#                                <li><i class="fa fa-eye"></i><span>6.3k</span></li>#}
-        {#                                <li><a href="shot-gallery.html#comments"><i class="fa fa-comments"></i><span>328</span></a>#}
-        {#                                </li>#}
-        {#                                <li><a class="like" href="#"><i class="fa fa-heart-o"></i><span>1.2k</span></a></li>#}
-        {#                            </ul>#}
-        {#                        </div>#}
-        {#                    </div>#}
-        {#                </div>#}
-        {#                <!-- END Shot -->#}
-        {##}
-        {#                <!-- Shot -->#}
-        {#                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">#}
-        {#                    <div class="shot">#}
-        {#                        <div class="shot-preview">#}
-        {#                            <a class="img" href="shot-gallery.html"><img src="assets/img/shot-3.jpg" alt=""></a>#}
-        {#                            <h5 class="title"><a href="shot-gallery.html">A sample facebook caption</a></h5>#}
-        {#                            <a class="label" href="page-search.html">Website</a>#}
-        {#                        </div>#}
-        {##}
-        {#                        <div class="shot-detail">#}
-        {#                            <div class="shot-info">#}
-        {#                                <a href="user-profile.html"><img src="assets/img/avatar-4.jpg" alt="avatar"></a>#}
-        {#                                <h6><a href="user-profile.html">Facebook</a></h6>#}
-        {#                                <time datetime="2016-02-04 22:30">Jan 30</time>#}
-        {#                            </div>#}
-        {##}
-        {#                            <ul class="shot-stats">#}
-        {#                                <li><i class="fa fa-eye"></i><span>6.3k</span></li>#}
-        {#                                <li><a href="shot-gallery.html#comments"><i class="fa fa-comments"></i><span>328</span></a>#}
-        {#                                </li>#}
-        {#                                <li><a class="like" href="#"><i class="fa fa-heart-o"></i><span>1.2k</span></a></li>#}
-        {#                            </ul>#}
-        {#                        </div>#}
-        {#                    </div>#}
-        {#                </div>#}
-        {#                <!-- END Shot -->#}
-        {##}
-        {#                <!-- Shot -->#}
-        {#                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">#}
-        {#                    <div class="shot">#}
-        {#                        <div class="shot-preview">#}
-        {#                            <a class="img" href="shot-gallery.html"><img src="assets/img/shot-8.jpg" alt=""></a>#}
-        {#                            <h5 class="title"><a href="shot-gallery.html">A sample facebook caption</a></h5>#}
-        {#                            <a class="label" href="page-search.html">Dashboard</a>#}
-        {#                        </div>#}
-        {##}
-        {#                        <div class="shot-detail">#}
-        {#                            <div class="shot-info">#}
-        {#                                <a href="user-profile.html"><img src="assets/img/avatar-5.jpg" alt="avatar"></a>#}
-        {#                                <h6><a href="user-profile.html">Mary</a></h6>#}
-        {#                                <time datetime="2016-02-04 22:30">Jan 29</time>#}
-        {#                            </div>#}
-        {##}
-        {#                            <ul class="shot-stats">#}
-        {#                                <li><i class="fa fa-eye"></i><span>6.3k</span></li>#}
-        {#                                <li><a href="shot-gallery.html#comments"><i class="fa fa-comments"></i><span>328</span></a>#}
-        {#                                </li>#}
-        {#                                <li><a class="like" href="#"><i class="fa fa-heart-o"></i><span>1.2k</span></a></li>#}
-        {#                            </ul>#}
-        {#                        </div>#}
-        {#                    </div>#}
-        {#                </div>#}
-        {#                <!-- END Shot -->#}
-        {##}
-        {#                <!-- Shot -->#}
-        {#                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">#}
-        {#                    <div class="shot">#}
-        {#                        <div class="shot-preview">#}
-        {#                            <a class="img" href="shot-gallery.html"><img src="assets/img/shot-4.jpg" alt=""></a>#}
-        {#                            <h5 class="title"><a href="shot-gallery.html">A sample facebook caption</a></h5>#}
-        {#                            <a class="label" href="page-search.html">App</a>#}
-        {#                        </div>#}
-        {##}
-        {#                        <div class="shot-detail">#}
-        {#                            <div class="shot-info">#}
-        {#                                <a href="user-profile.html"><img src="assets/img/avatar-1.jpg" alt="avatar"></a>#}
-        {#                                <h6><a href="user-profile.html">ShaMSofT</a></h6>#}
-        {#                                <time datetime="2016-02-04 22:30">Jan 29</time>#}
-        {#                            </div>#}
-        {##}
-        {#                            <ul class="shot-stats">#}
-        {#                                <li><i class="fa fa-eye"></i><span>6.3k</span></li>#}
-        {#                                <li><a href="shot-gallery.html#comments"><i class="fa fa-comments"></i><span>328</span></a>#}
-        {#                                </li>#}
-        {#                                <li><a class="like" href="#"><i class="fa fa-heart-o"></i><span>1.2k</span></a></li>#}
-        {#                            </ul>#}
-        {#                        </div>#}
-        {#                    </div>#}
-        {#                </div>#}
-        {#                <!-- END Shot -->#}
-        {##}
-        {#                <!-- Shot -->#}
-        {#                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">#}
-        {#                    <div class="shot">#}
-        {#                        <div class="shot-preview">#}
-        {#                            <a class="img" href="shot-gallery.html"><img src="assets/img/shot-7.jpg" alt=""></a>#}
-        {#                            <h5 class="title"><a href="shot-gallery.html">A sample facebook caption</a></h5>#}
-        {#                            <a class="label" href="page-search.html">Event</a>#}
-        {#                        </div>#}
-        {##}
-        {#                        <div class="shot-detail">#}
-        {#                            <div class="shot-info">#}
-        {#                                <a href="user-profile.html"><img src="assets/img/avatar-2.jpg" alt="avatar"></a>#}
-        {#                                <h6><a href="user-profile.html">Hosi</a></h6>#}
-        {#                                <time datetime="2016-02-04 22:30">Jan 28</time>#}
-        {#                            </div>#}
-        {##}
-        {#                            <ul class="shot-stats">#}
-        {#                                <li><i class="fa fa-eye"></i><span>6.3k</span></li>#}
-        {#                                <li><a href="shot-gallery.html#comments"><i class="fa fa-comments"></i><span>328</span></a>#}
-        {#                                </li>#}
-        {#                                <li><a class="like" href="#"><i class="fa fa-heart-o"></i><span>1.2k</span></a></li>#}
-        {#                            </ul>#}
-        {#                        </div>#}
-        {#                    </div>#}
-        {#                </div>#}
-        {#                <!-- END Shot -->#}
-        {##}
-        {#                <!-- Shot -->#}
-        {#                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">#}
-        {#                    <div class="shot">#}
-        {#                        <div class="shot-preview">#}
-        {#                            <a class="img" href="shot-gallery.html"><img src="assets/img/shot-9.jpg" alt=""></a>#}
-        {#                            <h5 class="title"><a href="shot-gallery.html">A sample facebook caption</a></h5>#}
-        {#                            <a class="label" href="page-search.html">User Interface</a>#}
-        {#                        </div>#}
-        {##}
-        {#                        <div class="shot-detail">#}
-        {#                            <div class="shot-info">#}
-        {#                                <a href="user-profile.html"><img src="assets/img/avatar-3.jpg" alt="avatar"></a>#}
-        {#                                <h6><a href="user-profile.html">Dumduri</a></h6>#}
-        {#                                <time datetime="2016-02-04 22:30">Jan 27</time>#}
-        {#                            </div>#}
-        {##}
-        {#                            <ul class="shot-stats">#}
-        {#                                <li><i class="fa fa-eye"></i><span>6.3k</span></li>#}
-        {#                                <li><a href="shot-gallery.html#comments"><i class="fa fa-comments"></i><span>328</span></a>#}
-        {#                                </li>#}
-        {#                                <li><a class="like" href="#"><i class="fa fa-heart-o"></i><span>1.2k</span></a></li>#}
-        {#                            </ul>#}
-        {#                        </div>#}
-        {#                    </div>#}
-        {#                </div>#}
-        <!-- END Shot -->
-
-{#        </div>#}
-{##}
-{##}
-{#        </div>#}
-{#        </section>#}
-        <!-- END Shots list -->
 
     </main>
-    <!-- END Main container -->
+
 
 
 {% endblock %}

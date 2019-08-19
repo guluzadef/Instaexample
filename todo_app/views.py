@@ -1,11 +1,13 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+from django.views import generic
+import json
 from .models import *
 from .forms import RegisterForm, LoginForm, PostForm, CommentForm, SocialForm
 from django.contrib import messages
 from django.contrib.auth import get_user_model, authenticate, login, logout
 from custom_user.forms import MyUserChangeForm, MyUserCreationForm
-from django.http import JsonResponse
+from django.http import JsonResponse, request
 from django.core.paginator import Paginator
 
 User = get_user_model()
@@ -94,7 +96,7 @@ def login_view(request):
             if user:
                 if user.is_active:
                     login(request, user)
-                    return redirect("explore")
+                    return redirect("settings_view")
                 else:
                     messages.error(
                         request, "Username or Password inValid"
@@ -149,12 +151,18 @@ def settings_view(request):
 
 def profile_view(request, id):
     context = common(request)
+    user = User.objects.filter(id=id).last()
+
     context["socialmodel"] = Socialsetting.objects.filter(user=request.user).last()
     context["user"] = User.objects.filter(id=id).last()
     context["count"] = Post.objects.filter(user_id=id).all().count()
     pagination = Paginator(Post.objects.filter(user_id=id), 6)
     context["dashboard"] = pagination.get_page(request.GET.get('page', 1))
     context["page_range"] = pagination.page_range
+    context["followers"] = [follow.from_user for follow in user.followers.all()]
+    context["follower_count"] = user.followers.all().count()
+    context["following_count"] = user.following.all().count()
+    context["followers"] = [follow.from_user for follow in user.followers.all()]
 
     return render(request, "user-profile.html", context)
 
@@ -278,3 +286,60 @@ def ShotDetail(request, id):
     print(id)
 
     return render(request, 'shot-detail.html', context)
+
+
+class FollowView(generic.View):
+
+    def post(self, request):
+        user_id = request.POST.get("user_id")
+        follow = Follow.objects.filter(
+            from_user=request.user,
+            to_user_id=user_id
+        ).last()
+        if not follow:  # follow
+            Follow.objects.create(
+                from_user=request.user,
+                to_user_id=user_id
+            )
+            return JsonResponse({
+                "status": True
+            })
+        else:
+            follow.delete()
+            return JsonResponse({
+                "status": False
+            })
+
+    # def get_context_data(self, **kwargs):
+    #     context = {}
+    #     context["following"] = [follow.to_user for follow in self.request.user.following.all()]
+    #     context["user_list"] = User.objects.all().exclude(id__in=[self.request.user.id])
+    #     return context
+
+
+def Follower_friend(request, id):
+    context = {}
+    user = User.objects.filter(id=id).last()
+    context["followers"] = [follow.from_user for follow in user.followers.all()]
+    context["user_list"] = User.objects.all()
+    context["following_count"] = request.user.following.all().count()
+    context["follower_count"] = user.followers.all().count()
+    context["user"] = user
+
+    return render(request, 'user-followers.html', context)
+
+
+def Following_friend(request, id):
+    context = {}
+    user = User.objects.filter(id=id).last()
+    context["following"] = [follow.to_user for follow in user.following.all()]
+    context["follower_count"] = user.followers.all().count()
+    context["following_count"] = user.following.all().count()
+    context["user"] = user
+
+
+    return render(request, 'user-following.html', context)
+
+
+
+

@@ -1,4 +1,7 @@
 {% load widget_tweaks %}
+{% load static %}
+<script src="{% static 'js/follow.js' %}"></script>
+
 <section class="no-border-bottom section-sm">
     <div class="container-fluid">
         <header class="section-header">
@@ -70,7 +73,8 @@
                     <div class="shot-by-widget">
                         <a href="{% url 'profile_view' currentpost.user.id %}"><img
                                 src="{{ currentpost.user.profilephoto.url }}"></a>
-                        <a class="username" href="user-profile.html">Facebook</a>
+                        <a class="username"
+                           href="{% url 'profile_view' currentpost.user.id %}">{{ currentpost.user }}</a>
                         <p class="title">{{ currentpost.user.headline }}</p>
                         <p class="subtitle">{{ currentpost.user.about }}</p>
 
@@ -81,7 +85,15 @@
                             <li><a href="user-followers.html"><i>Following</i><span>279</span></a></li>
                         </ul>
 
-                        <a class="btn btn-success btn-outline btn-sm" href="#">Follow</a>
+                        <ul class="col-sm-12 col-md-6 action-buttons">
+                            {% if user in following %}
+                                <a class="btn btn-success follow-btn" data-id="{{ user.id }}"
+                                >Unollow</a>
+                            {% else %}
+                                <a class="btn btn-success follow-btn" data-id="{{ user.id }}"
+                                >Follow</a>
+
+                            {% endif %}                        </ul>
                     </div>
                 </div>
                 <!-- END User widget -->

@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block body %}
+    <main>
+
+        <!-- Profile head -->
+        <div class="profile-head">
+            <div class="container">
+                {#                {% if user.id.profilephoto %}#}
+                <a href="user-profile.html"><img src="{{ user.profilephoto.url }}"></a>
+                {#                {% else %}#}
+                {#                    <a href="user-profile.html"><img src="{% static 'img/avatar-1.jpg' %}" ></a>#}
+
+
+                {#                {% endif %}#}
+                <h5>{{ user.first_name }} {{ user.last_name }}</h5>
+                <p><i class="fa fa-map-marker"></i> {{ user.location }}</p>
+                <p class="lead">{{ user.headline }}</p>
+                <p>{{ user.about }}</p>
+
+                <ul class="social-icons">
+                    <li><a class="facebook" href="{{ socialmodel.facebook }}"><i class="fa fa-facebook"></i></a></li>
+                    <li><a class="twitter" href="{{ socialmodel.twitter }}"><i class="fa fa-twitter"></i></a></li>
+                    <li><a class="dribbble" href="#"><i class="fa fa-dribbble"></i></a></li>
+                    <li><a class="linkedin" href="#"><i class="fa fa-linkedin"></i></a></li>
+                    <li><a class="instagram" href="#"><i class="fa fa-instagram"></i></a></li>
+                    <li><a href="#"><i class="fa fa-globe"></i></a></li>
+                </ul>
+
+                <div class="row bottom-bar">
+                    {% if user != request.user %}
+                        <ul class="col-sm-12 col-md-6 action-buttons">
+                            {% if user in following %}
+                                <a class="btn btn-success follow-btn" data-id="{{ user.id }}"
+                                >Unollow</a>
+                            {% else %}
+                                <a class="btn btn-success follow-btn" data-id="{{ user.id }}"
+                                >Follow</a>
+
+                            {% endif %}                        </ul>
+                    {% endif %}
+                    <ul class="col-sm-12 col-md-6 tab-list">
+                        <li class="active"><a href="user-profile.html"><i>Shots</i><span>{{ count }}</span></a></li>
+                        <li class="hidden-xs"><a
+                                href="user-profile.html"><i>Likes</i><span>{{ request.user.like_set.all.count }}</span></a>
+                        </li>
+                        <li>
+                            <a href="{% url 'friend_follow' user.id %}"><i>Followers</i><span>{{ follower_count }}</span></a>
+                        </li>
+                        <li><a href="{% url 'friend_following' user.id %}"><i>Following</i><span>{{ following_count }}</span></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>        <!-- END Profile head -->
+
+        <!-- User list -->
+        <section class="no-border-bottom section-sm">
+            <div class="container">
+
+                <div class="row equal-blocks">
+
+                    <!-- User widget -->
+
+                    <!-- END User widget -->
+
+
+                    <!-- User widget -->
+                    {% for user in following %}
+
+                        <div class="col-xs-12 col-sm-6 col-md-4">
+
+                            <div class="card user-widget">
+                                <div class="card-block text-center">
+
+                                    <a href="{% url 'profile_view' user.id %}"><img src="{{ user.profilephoto.url }}"></a>
+                                    <h5><a href="{% url 'profile_view' user.id %}">{{ user.username }}</a></h5>
+                                    <p class="lead">{{ user.about }}</p>
+
+                                    <br>
+                                    {% if user in following %}
+                                        <a class="btn btn-success follow-btn" data-id="{{ user.id }}"
+                                        >Unollow</a>
+                                    {% else %}
+                                        <a class="btn btn-success follow-btn" data-id="{{ user.id }}"
+                                        >Follow</a>
+
+                                    {% endif %}
+
+                                    <br>
+                                </div>
+
+                                <div class="card-footer">
+                                    <ul class="user-stats">
+                                        <li><a href="#"><i>Shots</i><span>59</span></a></li>
+                                        <li><a href="#"><i>Followers</i><span>635</span></a></li>
+                                        <li><a href="#"><i>Following</i><span>279</span></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    {% endfor %}
+
+                    <!-- END User widget -->
+                </div>
+            </div>
+
+
+        </section>
+        <!-- END User list -->
+
+    </main>
+    <!-- END Main container -->
+
+
+{% endblock %}
+{% block script %}
+
+{% endblock %}

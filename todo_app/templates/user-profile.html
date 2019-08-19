@@ -7,9 +7,13 @@
         <div class="profile-head">
             <div class="container">
                 {#                {% if user.id.profilephoto %}#}
-                <a href="user-profile.html"><img src="{{ user.profilephoto.url }}"></a>
+                <a href="{% url 'profile_view' user.id %}"><img src="{{ user.profilephoto.url }}"></a>
                 {#                {% else %}#}
                 {#                    <a href="user-profile.html"><img src="{% static 'img/avatar-1.jpg' %}" ></a>#}
+
+
+
+
 
 
                 {#                {% endif %}#}
@@ -28,18 +32,24 @@
                 </ul>
 
                 <div class="row bottom-bar">
-                    {% if user != user %}
+                    {% if user != request.user %}
                         <ul class="col-sm-12 col-md-6 action-buttons">
-                            <li><a class="btn btn-success btn-outline btn-sm" href="#">Follow</a></li>
-                        </ul>
+                            {% if user in followers %}
+                                <a class="btn btn-success follow-btn" data-id="{{ user.id }}"
+                                >Unollow</a>
+                            {% else %}
+                                <a class="btn btn-success follow-btn" data-id="{{ user.id }}"
+                                >Follow</a>
+
+                            {% endif %}                        </ul>
                     {% endif %}
                     <ul class="col-sm-12 col-md-6 tab-list">
                         <li class="active"><a href="user-profile.html"><i>Shots</i><span>{{ count }}</span></a></li>
                         <li class="hidden-xs"><a
                                 href="user-profile.html"><i>Likes</i><span>{{ request.user.like_set.all.count }}</span></a>
                         </li>
-                        <li><a href="user-followers.html"><i>Followers</i><span>2.3K</span></a></li>
-                        <li><a href="user-followers-2.html"><i>Following</i><span>279</span></a></li>
+                        <li><a href="{% url 'friend_follow' user.id %}"><i>Followers</i><span>{{ follower_count }}</span></a></li>
+                        <li><a href="{% url 'friend_following' user.id %}"><i>Following</i><span>{{ following_count }}</span></a></li>
                     </ul>
                 </div>
             </div>
@@ -125,81 +135,21 @@
                         {% endif %}
                     {% endfor %}
                     {% if dashboard.has_next %}
-                        <li class="page-item"><a class="page-link" href="?page={{ dashboard.next_page_number }}">Next</a>
+                        <li class="page-item"><a class="page-link"
+                                                 href="?page={{ dashboard.next_page_number }}">Next</a>
                         </li>
                     {% endif %}
                 </ul>
             </div>
 
         </section>
-        {#        <section class="no-border-bottom section-sm">#}
-        {#            <div class="container">#}
-        {##}
-        {#                <div class="row">#}
-        {##}
-        {#                    <!-- Shot -->#}
-        {#                    {% for item in dashboard %}#}
-        {#                        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">#}
-        {#                            <div class="shot shot-minimal">#}
-        {#                                <div class="shot-preview">#}
-        {#                                    <a class="img" href="shot-gallery.html"><img src="{{ item.image.url }}" alt=""></a>#}
-        {##}
-        {#                                    <a class="text-overlay" href="shot-gallery.html">#}
-        {#                                        <span class="heading"></span>#}
-        {#                                        <span class="desc">{{ item.description }}</span>#}
-        {#                                        <time datetime="2016-02-04 22:30">{{ item.date }}</time>#}
-        {#                                    </a>#}
-        {#                                </div>#}
-        {##}
-        {#                                <div class="shot-detail">#}
-        {#                                    <div class="shot-info">#}
-        {#                                        <p><a href="page-search.html">{{ item.description }}</a></p>#}
-        {#                                    </div>#}
-        {##}
-        {#                                    <ul class="shot-stats">#}
-        {#                                        <li><i class="fa fa-eye"></i><span>6.3k</span></li>#}
-        {#                                        <li><a href="shot-gallery.html#comments"><i#}
-        {#                                                class="fa fa-comments"></i><span>328</span></a>#}
-        {#                                        </li>#}
-        {#                                        <li><a class="like" href="#"><i class="fa fa-heart"></i><span>1.2k</span></a>#}
-        {#                                        </li>#}
-        {#                                    </ul>#}
-        {#                                </div>#}
-        {#                            </div>#}
-        {#                        </div>#}
-        {##}
-        {##}
-        {#                        </div>#}
-        {#                    {% endfor %}#}
-        {#      </div>#}
-        {#        </section>#}
 
-        {#                <!-- Pagination -->#}
-        {#                <nav class="text-center">#}
-        {#                    <ul class="pagination">#}
-        {#                        <li>#}
-        {#                            <a href="#" aria-label="Previous">#}
-        {#                                <i class="ti-angle-left"></i>#}
-        {#                            </a>#}
-        {#                        </li>#}
-        {#                        <li><a href="#">1</a></li>#}
-        {#                        <li class="active"><a href="#">2</a></li>#}
-        {#                        <li><a href="#">3</a></li>#}
-        {#                        <li><a href="#">4</a></li>#}
-        {#                        <li><a href="#">5</a></li>#}
-        {#                        <li>#}
-        {#                            <a href="#" aria-label="Next">#}
-        {#                                <i class="ti-angle-right"></i>#}
-        {#                            </a>#}
-        {#                        </li>#}
-        {#                    </ul>#}
-        {#                </nav>#}
-        <!-- END Pagination -->
-
-
-        <!-- END User shots -->
 
     </main>
+
+{% endblock %}
+{% block script %}
+
 {% endblock %}
 <!-- END Main container -->
 

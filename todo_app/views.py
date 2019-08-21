@@ -1,6 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.views import generic
+from django.views.generic import UpdateView
+
 import json
 from .models import *
 from .forms import RegisterForm, LoginForm, PostForm, CommentForm, SocialForm
@@ -152,19 +154,28 @@ def settings_view(request):
 def profile_view(request, id):
     context = common(request)
     user = User.objects.filter(id=id).last()
-
     context["socialmodel"] = Socialsetting.objects.filter(user=request.user).last()
-    context["user"] = User.objects.filter(id=id).last()
     context["count"] = Post.objects.filter(user_id=id).all().count()
     pagination = Paginator(Post.objects.filter(user_id=id), 6)
     context["dashboard"] = pagination.get_page(request.GET.get('page', 1))
     context["page_range"] = pagination.page_range
+    context["user"] = User.objects.filter(id=id).last()
     context["followers"] = [follow.from_user for follow in user.followers.all()]
+    context["following"] = [follow.to_user for follow in user.following.all()]
     context["follower_count"] = user.followers.all().count()
     context["following_count"] = user.following.all().count()
-    context["followers"] = [follow.from_user for follow in user.followers.all()]
 
     return render(request, "user-profile.html", context)
+
+
+
+class PostUpdate(generic.UpdateView):
+    extra_context = common(request)
+    model = Post
+    form_class = PostForm
+    template_name = "shot-add.html"
+    success_url = "/"
+
 
 
 def explore(request):
@@ -252,8 +263,10 @@ def addpost_view(request):
 def ShotDetail(request, id):
     context = {}
 
+
     id = request.GET.get('id')
     if id:
+
         pass
     else:
         id = request.POST.get("post_id_cm")
@@ -261,6 +274,8 @@ def ShotDetail(request, id):
     if request.user not in current_post.view.all():
         current_post.view.add(request.user)
     context["currentpost"] = current_post
+    context["follower_count"] = current_post.user.followers.all().count()
+    context["following_count"] = current_post.user.following.all().count()
     me = Post.objects.all().filter(user=current_post.user).count()
     current_post_comment = current_post.commentpost_set.all()
     context["current_post_comment"] = current_post_comment
@@ -318,11 +333,15 @@ class FollowView(generic.View):
 
 
 def Follower_friend(request, id):
-    context = {}
+    context = common(request)
     user = User.objects.filter(id=id).last()
-    context["followers"] = [follow.from_user for follow in user.followers.all()]
+    pagination = Paginator([follow.from_user for follow in user.followers.all()], 6)
+    context["page_range"] = pagination.page_range
+    context["followers"] = pagination.get_page(request.GET.get('page', 1))
+    context["user_followers"] = [follow.from_user for follow in user.followers.all()]
+    context["following"] = [follow.to_user for follow in user.following.all()]
     context["user_list"] = User.objects.all()
-    context["following_count"] = request.user.following.all().count()
+    context["following_count"] = user.following.all().count()
     context["follower_count"] = user.followers.all().count()
     context["user"] = user
 
@@ -330,16 +349,15 @@ def Follower_friend(request, id):
 
 
 def Following_friend(request, id):
-    context = {}
+    context = common(request)
     user = User.objects.filter(id=id).last()
-    context["following"] = [follow.to_user for follow in user.following.all()]
+    pagination = Paginator([follow.to_user for follow in user.following.all()], 6)
+    context["page_range"] = pagination.page_range
+    context["following"] = pagination.get_page(request.GET.get('page', 1))
+    context["followers"] = [follow.from_user for follow in user.followers.all()]
+    Follow.objects.filter(to_user=user)
     context["follower_count"] = user.followers.all().count()
     context["following_count"] = user.following.all().count()
     context["user"] = user
 
-
     return render(request, 'user-following.html', context)
-
-
-
-

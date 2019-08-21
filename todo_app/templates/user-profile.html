@@ -12,10 +12,6 @@
                 {#                    <a href="user-profile.html"><img src="{% static 'img/avatar-1.jpg' %}" ></a>#}
 
 
-
-
-
-
                 {#                {% endif %}#}
                 <h5>{{ user.first_name }} {{ user.last_name }}</h5>
                 <p><i class="fa fa-map-marker"></i> {{ user.location }}</p>
@@ -30,26 +26,31 @@
                     <li><a class="instagram" href="#"><i class="fa fa-instagram"></i></a></li>
                     <li><a href="#"><i class="fa fa-globe"></i></a></li>
                 </ul>
-
                 <div class="row bottom-bar">
                     {% if user != request.user %}
                         <ul class="col-sm-12 col-md-6 action-buttons">
-                            {% if user in followers %}
-                                <a class="btn btn-success follow-btn" data-id="{{ user.id }}"
-                                >Unollow</a>
-                            {% else %}
-                                <a class="btn btn-success follow-btn" data-id="{{ user.id }}"
-                                >Follow</a>
+                        {% if request.user in followers %}
+                            <a class="btn btn-success follow-btn" data-id="{{ user.id }}"
+                            >Unfollow</a>
+                        {% else %}
+                            <a class="btn btn-success follow-btn" data-id="{{ user.id }}"
+                            >Follow</a>
+                        {% endif %}
 
-                            {% endif %}                        </ul>
                     {% endif %}
+
+                    </ul>
                     <ul class="col-sm-12 col-md-6 tab-list">
                         <li class="active"><a href="user-profile.html"><i>Shots</i><span>{{ count }}</span></a></li>
                         <li class="hidden-xs"><a
                                 href="user-profile.html"><i>Likes</i><span>{{ request.user.like_set.all.count }}</span></a>
                         </li>
-                        <li><a href="{% url 'friend_follow' user.id %}"><i>Followers</i><span>{{ follower_count }}</span></a></li>
-                        <li><a href="{% url 'friend_following' user.id %}"><i>Following</i><span>{{ following_count }}</span></a></li>
+                        <li>
+                            <a href="{% url 'friend_follow' user.id %}"><i>Followers</i><span>{{ follower_count }}</span></a>
+                        </li>
+                        <li>
+                            <a href="{% url 'friend_following' user.id %}"><i>Following</i><span>{{ following_count }}</span></a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -57,7 +58,6 @@
         <!-- END Profile head -->
 
         <!-- User shots -->
-
         <section>
             <div class="container">
 
@@ -82,7 +82,6 @@
                                     <h5 class="title"><a href="shot-gallery.html">{{ item.description }}</a></h5>
                                     <a class="label" href="page-search.html">App</a>
                                 </div>
-
                                 <div class="shot-detail">
                                     <div class="shot-info">
                                         <a href="{% url 'profile_view' item.user_id %}"><img

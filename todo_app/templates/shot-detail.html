@@ -1,5 +1,6 @@
 {% load widget_tweaks %}
 {% load static %}
+{% load common %}
 <script src="{% static 'js/follow.js' %}"></script>
 
 <section class="no-border-bottom section-sm">
@@ -81,19 +82,30 @@
                         <ul class="user-stats">
                             <li class="active"><a href="user-profile.html"><i>Shots</i><span><x></x>
                                 {{ count }}</span></a></li>
-                            <li><a href="user-followers.html"><i>Followers</i><span>2.3K</span></a></li>
-                            <li><a href="user-followers.html"><i>Following</i><span>279</span></a></li>
+                            <li>
+                                <a href="{% url 'friend_follow' user.id %}"><i>Followers</i><span>{{ follower_count }}</span></a>
+                            </li>
+                            <li>
+                                <a href="{% url 'friend_following' user.id %}"><i>Following</i><span>{{ following_count }}</span></a>
+                            </li>
                         </ul>
 
                         <ul class="col-sm-12 col-md-6 action-buttons">
-                            {% if user in following %}
-                                <a class="btn btn-success follow-btn" data-id="{{ user.id }}"
-                                >Unollow</a>
-                            {% else %}
-                                <a class="btn btn-success follow-btn" data-id="{{ user.id }}"
-                                >Follow</a>
 
-                            {% endif %}                        </ul>
+
+                            {% if currentpost.user != request.user %}
+                                <ul class="col-sm-12 col-md-6 action-buttons">
+                                {% if request.user in currentpost.user|get_followers %}
+                                    <a class="btn btn-success follow-btn" data-id="{{ currentpost.user.id }}"
+                                    >Unfollow</a>
+                                {% else %}
+                                    <a class="btn btn-success follow-btn" data-id="{{ currentpost.user.id }}"
+                                    >Follow</a>
+                                {% endif %}
+                            {% else %}
+                                <a href="{% url 'update' currentpost.id %}">Update</a>
+                            {% endif %}
+                            </ul>
                     </div>
                 </div>
                 <!-- END User widget -->

@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load common %}
 {% block body %}
     <main>
 
@@ -30,7 +31,7 @@
                 <div class="row bottom-bar">
                     {% if user != request.user %}
                         <ul class="col-sm-12 col-md-6 action-buttons">
-                            {% if user in following %}
+                            {% if request.user in followers %}
                                 <a class="btn btn-success follow-btn" data-id="{{ user.id }}"
                                 >Unollow</a>
                             {% else %}
@@ -47,7 +48,9 @@
                         <li>
                             <a href="{% url 'friend_follow' user.id %}"><i>Followers</i><span>{{ follower_count }}</span></a>
                         </li>
-                        <li><a href="{% url 'friend_following' user.id %}"><i>Following</i><span>{{ following_count }}</span></a></li>
+                        <li>
+                            <a href="{% url 'friend_following' user.id %}"><i>Following</i><span>{{ following_count }}</span></a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -65,25 +68,31 @@
 
 
                     <!-- User widget -->
-                    {% for user in followers %}
+                    {% for user in user_followers %}
 
                         <div class="col-xs-12 col-sm-6 col-md-4">
 
                             <div class="card user-widget">
                                 <div class="card-block text-center">
 
-                                    <a href="{% url 'profile_view' user.id %}"><img src="{{ user.profilephoto.url }}"></a>
+                                    <a href="{% url 'profile_view' user.id %}"><img
+                                            src="{{ user.profilephoto.url }}"></a>
                                     <h5><a href="{% url 'profile_view' user.id %}">{{ user.username }}</a></h5>
                                     <p class="lead">{{ user.about }}</p>
 
                                     <br>
-                                    {% if user in following %}
-                                        <a class="btn btn-success follow-btn" data-id="{{ user.id }}"
-                                        >Unollow</a>
-                                    {% else %}
-                                        <a class="btn btn-success follow-btn" data-id="{{ user.id }}"
-                                        >Follow</a>
+                                    {% if user != request.user %}
+                                        <br>
+                                        {% if request.user in user|get_followers %}
+                                            <a class="btn btn-success follow-btn" data-id="{{ user.id }}"
+                                            >Unollow</a>
+                                        {% else %}
+                                            <a class="btn btn-success follow-btn" data-id="{{ user.id }}"
+                                            >Follow</a>
+                                        {% endif %}
 
+
+                                        <br>
                                     {% endif %}
 
                                     <br>
@@ -105,7 +114,25 @@
                     <!-- END User widget -->
                 </div>
             </div>
+            <ul class="pagination">
+                {% if followers.has_previous %}
+                    <li class="page-item disabled"><a class="page-link"
+                                                      href="?page={{ followers.previous_page_number }}">Previous</a>
+                    </li>
+                {% endif %}
 
+                {% for page in page_range %}
+                    {% if page == followers.number %}
+                        <li class="page-item active"><a class="page-link" href="?page={{ page }}">{{ page }}</a></li>
+                    {% else %}
+                        <li class="page-item"><a class="page-link" href="?page={{ page }}">{{ page }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if followers.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ followers.next_page_number }}">Next</a>
+                    </li>
+                {% endif %}
+            </ul>
 
         </section>
         <!-- END User list -->

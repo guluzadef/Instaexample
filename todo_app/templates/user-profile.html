@@ -41,9 +41,8 @@
 
                     </ul>
                     <ul class="col-sm-12 col-md-6 tab-list">
-                        <li class="active"><a href="user-profile.html"><i>Shots</i><span>{{ count }}</span></a></li>
-                        <li class="hidden-xs"><a
-                                href="user-profile.html"><i>Likes</i><span>{{ request.user.like_set.all.count }}</span></a>
+                        <li ><a href="user-profile.html"><i>Shots</i><span>{{ count }}</span></a></li>
+                        <li class="hidden-xs"><i>Likes</i><span>{{ request.user.like_set.all.count }}</span>
                         </li>
                         <li>
                             <a href="{% url 'friend_follow' user.id %}"><i>Followers</i><span>{{ follower_count }}</span></a>
@@ -79,8 +78,7 @@
                                             src="{{ item.image.url }}"
                                             style="width: 360px; height: 270px;"
                                             alt=""></a>
-                                    <h5 class="title"><a href="shot-gallery.html">{{ item.description }}</a></h5>
-                                    <a class="label" href="page-search.html">App</a>
+                                    <h5 class="title"><a href="{% url 'detail' item.id %}">{{ item.description }}</a></h5>
                                 </div>
                                 <div class="shot-detail">
                                     <div class="shot-info">

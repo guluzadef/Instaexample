@@ -3,6 +3,8 @@ from django.contrib.auth import get_user_model
 import random
 import string
 
+from django.urls import reverse
+
 User = get_user_model()
 
 
@@ -172,6 +174,13 @@ class Verification(models.Model):
     def __str__(self):
         return f"{self.user} {self.token}"
 
+    def forget_url(self):
+        return reverse("forget_view", kwargs={
+            "token":self.token,
+            "user_id":self.user_id
+        })
+
+
 
 class Socialsetting(models.Model):
     user=models.ForeignKey(User,on_delete=models.CASCADE)
@@ -200,3 +209,5 @@ class Follow(models.Model):
 
     def __str__(self):
         return f"{self.from_user} => {self.to_user}"
+
+

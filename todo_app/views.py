@@ -1,11 +1,18 @@
+from threading import Thread
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
 from django.views import generic
 from django.views.generic import UpdateView
 
 import json
+
+from sqlparse.sql import Token
+
+from todo_app.tasks import send_forget_password, send_verification_email
 from .models import *
-from .forms import RegisterForm, LoginForm, PostForm, CommentForm, SocialForm
+from .forms import RegisterForm, LoginForm, PostForm, CommentForm, SocialForm, ForgetPass, PasswordChangeForm
 from django.contrib import messages
 from django.contrib.auth import get_user_model, authenticate, login, logout
 from custom_user.forms import MyUserChangeForm, MyUserCreationForm
@@ -168,14 +175,12 @@ def profile_view(request, id):
     return render(request, "user-profile.html", context)
 
 
-
 class PostUpdate(generic.UpdateView):
     extra_context = common(request)
     model = Post
     form_class = PostForm
     template_name = "shot-add.html"
     success_url = "/"
-
 
 
 def explore(request):
@@ -263,7 +268,6 @@ def addpost_view(request):
 def ShotDetail(request, id):
     context = {}
 
-
     id = request.GET.get('id')
     if id:
 
@@ -302,6 +306,15 @@ def ShotDetail(request, id):
 
     return render(request, 'shot-detail.html', context)
 
+class Delete(generic.DeleteView):
+    model = Post
+    template_name = "post_confirm_delete.html"
+    success_url = "/"
+
+    def get_queryset(self):
+        qs = super(Delete, self).get_queryset()
+        return qs.filter(user=self.request.user)
+
 
 class FollowView(generic.View):
 
@@ -325,13 +338,7 @@ class FollowView(generic.View):
                 "status": False
             })
 
-    # def get_context_data(self, **kwargs):
-    #     context = {}
-    #     context["following"] = [follow.to_user for follow in self.request.user.following.all()]
-    #     context["user_list"] = User.objects.all().exclude(id__in=[self.request.user.id])
-    #     return context
-
-
+#senin followerlerin
 def Follower_friend(request, id):
     context = common(request)
     user = User.objects.filter(id=id).last()
@@ -347,7 +354,7 @@ def Follower_friend(request, id):
 
     return render(request, 'user-followers.html', context)
 
-
+#kimleri follow etdiyin
 def Following_friend(request, id):
     context = common(request)
     user = User.objects.filter(id=id).last()
@@ -361,3 +368,68 @@ def Following_friend(request, id):
     context["user"] = user
 
     return render(request, 'user-following.html', context)
+
+#postu beyenen userlerin siyahisi
+def likers_user(request, id):
+    context = common(request)
+    user = Post.objects.filter(id=id).last()
+    context["likers"] = user
+
+    return render(request, "likers_user.html", context)
+
+#email imputunu acmag ucun
+class ForgetPassword(generic.FormView):
+    template_name = "forgetpassword.html"
+    success_url = "/"
+    form_class = ForgetPass
+
+    def form_valid(self, form):
+        email = form.cleaned_data.get("email")
+        user = User.objects.filter(email=email).last()
+        if user:
+            verify = Verification.objects.create(user=user)
+            background_job = Thread(target=send_forget_password, args=(email, verify.forget_url()))
+            background_job.start()
+            messages.success(self.request, "Succes")
+            return super(ForgetPassword, self).form_valid(form)
+        else:
+            messages.success(self.request, "Succes")
+            return super(ForgetPassword, self).form_valid(form)
+
+
+#parolu deyishmek ucun
+class Forget_Password(generic.View):
+
+    def get(self, request, user_id, token):
+        verify = Verification.objects.filter(
+            user_id=user_id,
+            token=token,
+            expire=False
+        ).last()
+        if verify:
+            context = {}
+            context["form"] = PasswordChangeForm()
+            return render(request, "forgetpassword.html", context)
+        else:
+            return redirect("/")
+
+    def post(self, request, user_id, token):
+        verify = Verification.objects.filter(
+            user_id=user_id,
+            token=token,
+            expire=False
+        ).last()
+        if verify:
+            if not verify.expire:
+                verify.expire = True
+                verify.save()
+                form = PasswordChangeForm(request.POST)
+                if form.is_valid():
+                    password = form.cleaned_data.get("new_password")
+                    verify.user.set_password(password)
+                    verify.user.save()
+                    return redirect("/")
+                else:
+                    return redirect("/")
+        else:
+            return redirect("/")

@@ -89,7 +89,6 @@
                                 <a href="{% url 'friend_following' user.id %}"><i>Following</i><span>{{ following_count }}</span></a>
                             </li>
                         </ul>
-
                         <ul class="col-sm-12 col-md-6 action-buttons">
 
 
@@ -104,8 +103,10 @@
                                 {% endif %}
                             {% else %}
                                 <a href="{% url 'update' currentpost.id %}">Update</a>
+                                <a href="{% url 'delete' currentpost.id %}">Delete</a>
                             {% endif %}
                             </ul>
+                        </ul>
                     </div>
                 </div>
                 <!-- END User widget -->
@@ -115,7 +116,10 @@
                 <div class="sidebar-block">
                     <ul class="single-shot-stats">
                         <li><i class="fa fa-eye"></i><span>{{ currentpost.view.all.count }}</span></li>
+
                         <li><a class="like" data-id="{{ currentpost.id }}" data-attr="data-id" href="#">
+
+
                             {% if request.user in currentpost.get_likers %}
                                 <i class="fa fa-heart likebutton-{{ currentpost.id }}"></i>
                             {% else %}
@@ -123,6 +127,8 @@
                             {% endif %}
                             <span class="like-{{ currentpost.id }}">{{ currentpost.like_count }}</span></a>
                         </li>
+                        <a href="{% url 'likers' currentpost.id %}">Likers</a>
+
                     </ul>
                 </div>
                 <!-- END Shot stats -->

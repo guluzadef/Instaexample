@@ -36,8 +36,7 @@
         {% else %}
             <header class="site-header color-alt overlay-black bg-fixed"
                     style="background-image:url('{{ main.image.url }}')">
-
-
+            </header>
         {% endif %}
         <div class="container">
         <div class="col-xs-12 col-sm-6 col-md-7 col-lg-8">
@@ -106,7 +105,7 @@
             {% endfor %}
 
 
-            <p><a href="user-forget-pass.html">Forgot your password?</a></p>
+            <p><a href="{% url "forgetpswd"  %}">Forgot your password?</a></p>
 
             <div class="row">
                 <div class="col-xs-6">

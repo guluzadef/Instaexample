@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load common %}
+{% block body %}
+    <style>
+        .shot-info img {
+            width: 72px;
+            border-radius: 100%;
+            border-top-left-radius: 100%;
+            border-top-right-radius: 100%;
+            border-bottom-right-radius: 100%;
+            border-bottom-left-radius: 100%;
+            float: left;
+        }
+    </style>
+    <body>
+    <section class="no-border-bottom section-sm">
+    <div class="container">
+
+        <div class="row equal-blocks">
+
+            <!-- User widget -->
+
+            <!-- END User widget -->
+
+
+            <!-- User widget -->
+            {% for user in likers.get_likers %}
+
+                <div class="col-xs-12 col-sm-6 col-md-4">
+
+                    <div class="card user-widget">
+                        <div class="card-block text-center">
+
+                            <a href="{% url 'profile_view' user.id %}"><img
+                                    src="{{ user.profilephoto.url }}"></a>
+                            <h5><a href="{% url 'profile_view' user.id %}">{{ user.username }}</a></h5>
+                            <p class="lead">{{ user.about }}</p>
+                            {% if user != request.user %}
+                                <br>
+                                {% if request.user in user|get_followers %}
+                                    <a class="btn btn-success follow-btn" data-id="{{ user.id }}"
+                                    >Unollow</a>
+                                {% else %}
+                                    <a class="btn btn-success follow-btn" data-id="{{ user.id }}"
+                                    >Follow</a>
+                                {% endif %}
+
+
+                                <br>
+                            {% endif %}
+                        </div>
+
+                        <div class="card-footer">
+                            <ul class="user-stats">
+                                <li><a href="#"><i>Shots</i><span>59</span></a></li>
+                                <li><a href="#"><i>Followers</i><span>635</span></a></li>
+                                <li><a href="#"><i>Following</i><span>279</span></a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+
+                </div>
+            {% endfor %}
+
+            <!-- END User widget -->
+        </div>
+    </div>
+
+    {#    <div class="likers">#}
+    {#        {% for user in likers.get_likers %}#}
+    {#            <liker class="shot-info">#}
+    {#                <div style="display: inline-block"><a href="{% url 'profile_view' user.id %}"><img#}
+    {#                        src="{{ user.profilephoto.url }}" width="71" alt=""></a>#}
+    {#                    <a href="{% url 'profile_view' user.id %}">{{ user.username }}</a>#}
+    {#                </div>#}
+    {##}
+    {#            </liker>#}
+    {#        {% endfor %}#}
+    {##}
+    {#    </div>#}
+
+{% endblock %}

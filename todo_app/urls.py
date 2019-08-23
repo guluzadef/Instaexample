@@ -1,9 +1,11 @@
 from django.urls import path
-from .views import home,PostUpdate,Following_friend,Follower_friend,FollowView,register_view,social_settings,verify_view,like_view,login_view,settings_view,logout_view,profile_view,addpost_view,explore,ShotDetail
+from .views import home,likers_user,Delete,ForgetPassword,PostUpdate,Forget_Password,Following_friend,Follower_friend,FollowView,register_view,social_settings,verify_view,like_view,login_view,settings_view,logout_view,profile_view,addpost_view,explore,ShotDetail
 
 urlpatterns = [
     path('', home, name="home"),
     path('verify/<str:token>/<int:user_id>', verify_view, name="verify_view"),
+    path('changepassword/<str:token>/<int:user_id>', Forget_Password.as_view(), name="forget_view"),
+    path('forgetpswd/', ForgetPassword.as_view(), name="forgetpswd"),
     path('register/', register_view, name="register_view"),
     path('login/', login_view, name="login_view"),
     path('settings/', settings_view, name="settings_view"),
@@ -17,5 +19,8 @@ urlpatterns = [
     path('follow/', FollowView.as_view(), name="follower"),
     path('<int:id>/follower/',Follower_friend,name="friend_follow"),
     path('<int:id>/following/', Following_friend, name="friend_following"),
-    path('update/<int:pk>/',PostUpdate.as_view(),name="update")
+    path('update/<int:pk>/',PostUpdate.as_view(),name="update"),
+    path('likers/<int:id>/', likers_user, name="likers"),
+    path('delete/<int:pk>',Delete.as_view(),name="delete")
+
 ]

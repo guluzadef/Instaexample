@@ -35,7 +35,7 @@ class RegisterForm(forms.ModelForm):
 
         }
 
-    def clean_password2(self):
+    def clean(self):
         password1 = self.cleaned_data.get("password1")
         password2 = self.cleaned_data.get("password2")
         if password1 and password2 and password1 != password2:
@@ -111,3 +111,17 @@ class SocialForm(forms.ModelForm):
         }
 
 
+
+class   ForgetPass(forms.Form):
+    email=forms.EmailField()
+
+
+class PasswordChangeForm(forms.Form):
+    new_password = forms.CharField(widget=forms.PasswordInput())
+    verify_password = forms.CharField(widget=forms.PasswordInput())
+
+    def clean(self):
+        new_password = self.cleaned_data.get("new_password")
+        verify_password = self.cleaned_data.get("verify_password")
+        if new_password != verify_password:
+            raise forms.ValidationError("Not equal")

@@ -72,12 +72,13 @@
         <!-- END User account and action buttons -->
 
         <!-- Search screen -->
-        {#        <div class="search-screen closed">#}
-        {#            <button class="search-closer"><i class="ti-close"></i></button>#}
-        {#            <form class="search-form" action="http://thetheme.io/theshots/page-search.html">#}
-        {#                <input type="text" autocomplete="off" placeholder="Type to search...">#}
-        {#            </form>#}
-        {#        </div>#}
+        <div class="search-screen closed">
+            <button class="search-closer"><i class="ti-close"></i></button>
+            <form class="search-form">
+                <input type="text" name="q" value="{{ request.GET.q }}" autocomplete="off"
+                       placeholder="Type to search...">
+            </form>
+        </div>
         <!-- END Search screen -->
 
     </div>

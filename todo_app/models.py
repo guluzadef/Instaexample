@@ -211,3 +211,31 @@ class Follow(models.Model):
         return f"{self.from_user} => {self.to_user}"
 
 
+class About(models.Model):
+    title=models.CharField(max_length=255)
+    name=models.CharField(max_length=255)
+    description=models.CharField(max_length=255)
+    text=models.TextField()
+    def __str__(self):
+        return f"{self.name}"
+class Contactmenu(models.Model):
+    title = models.CharField(max_length=255)
+    name = models.CharField(max_length=255)
+    description = models.CharField(max_length=255)
+    def __str__(self):
+        return f"{self.name}"
+class Contactus(models.Model):
+    icon=models.CharField(max_length=220)
+    desc=models.CharField(max_length=255)
+
+
+    def __str__(self):
+        return f"{self.desc}"
+
+class Contactform(models.Model):
+    name=models.CharField(max_length=255)
+    email=models.EmailField()
+    message=models.TextField()
+
+    def __str__(self):
+        return f"{self.name}"

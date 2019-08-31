@@ -1,6 +1,5 @@
 from django.urls import path
-from .views import home,likers_user,Delete,ForgetPassword,PostUpdate,Forget_Password,Following_friend,Follower_friend,FollowView,register_view,social_settings,verify_view,like_view,login_view,settings_view,logout_view,profile_view,addpost_view,explore,ShotDetail
-
+from .views import *
 urlpatterns = [
     path('', home, name="home"),
     path('verify/<str:token>/<int:user_id>', verify_view, name="verify_view"),
@@ -21,6 +20,8 @@ urlpatterns = [
     path('<int:id>/following/', Following_friend, name="friend_following"),
     path('update/<int:pk>/',PostUpdate.as_view(),name="update"),
     path('likers/<int:id>/', likers_user, name="likers"),
-    path('delete/<int:pk>',Delete.as_view(),name="delete")
+    path('delete/<int:pk>',Delete.as_view(),name="delete"),
+    path('about/', about, name="about"),
+    path('contactus/',contact_view, name="contact"),
 
 ]

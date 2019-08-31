@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from custom_user.models import MyUser
-from .models import Post,CommentPost,Socialsetting
+from .models import Post,CommentPost,Socialsetting,Contactform
 
 
 class RegisterForm(forms.ModelForm):
@@ -125,3 +125,23 @@ class PasswordChangeForm(forms.Form):
         verify_password = self.cleaned_data.get("verify_password")
         if new_password != verify_password:
             raise forms.ValidationError("Not equal")
+
+
+class Contact(forms.ModelForm):
+   class Meta:
+       model=Contactform
+       fields=["name","email","message"]
+       widgets = {
+           "name": forms.TextInput(attrs={
+
+               "class": "form-control"
+           }),
+           "email": forms.EmailInput(attrs={
+               "class": "form-control"
+           }),
+           "message": forms.TextInput(attrs={
+               "class": "form-control"
+           }),
+       }
+
+

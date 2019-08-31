@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import generic
+from  django.db.models import Q
 from django.views.generic import UpdateView
 
 import json
@@ -12,7 +13,7 @@ from sqlparse.sql import Token
 
 from todo_app.tasks import send_forget_password, send_verification_email
 from .models import *
-from .forms import RegisterForm, LoginForm, PostForm, CommentForm, SocialForm, ForgetPass, PasswordChangeForm
+from .forms import RegisterForm, LoginForm, PostForm, CommentForm, SocialForm, ForgetPass, PasswordChangeForm, Contact
 from django.contrib import messages
 from django.contrib.auth import get_user_model, authenticate, login, logout
 from custom_user.forms import MyUserChangeForm, MyUserCreationForm
@@ -53,6 +54,7 @@ def home(request):
     context["aboutsite"] = AboutSite.objects.last()
     context["form"] = RegisterForm()
     context["loginform"] = LoginForm()
+
     if request.user.is_authenticated:
         return redirect('explore')
     else:
@@ -188,6 +190,14 @@ def explore(request):
     pagination = Paginator(Post.objects.all(), 6)
     context["post"] = pagination.get_page(request.GET.get('page', 1))
     context["page_range"] = pagination.page_range
+    if "q" in request.POST:
+        query = request.GET.get('q')
+        context["post"] = Post.objects.filter(
+            Q(get_user_model_icontains=query |
+            Q(user__username__icontains=query) |
+            Q(user__first_name__icontains=query) &
+            Q(user__last_name__icontains=query)
+        )
     if request.method == "POST" and request.is_ajax():
         post_id = request.POST.get("post_id")
         post = Post.objects.filter(id=post_id).last()
@@ -306,6 +316,7 @@ def ShotDetail(request, id):
 
     return render(request, 'shot-detail.html', context)
 
+
 class Delete(generic.DeleteView):
     model = Post
     template_name = "post_confirm_delete.html"
@@ -338,7 +349,8 @@ class FollowView(generic.View):
                 "status": False
             })
 
-#senin followerlerin
+
+# senin followerlerin
 def Follower_friend(request, id):
     context = common(request)
     user = User.objects.filter(id=id).last()
@@ -354,7 +366,8 @@ def Follower_friend(request, id):
 
     return render(request, 'user-followers.html', context)
 
-#kimleri follow etdiyin
+
+# kimleri follow etdiyin
 def Following_friend(request, id):
     context = common(request)
     user = User.objects.filter(id=id).last()
@@ -369,7 +382,8 @@ def Following_friend(request, id):
 
     return render(request, 'user-following.html', context)
 
-#postu beyenen userlerin siyahisi
+
+# postu beyenen userlerin siyahisi
 def likers_user(request, id):
     context = common(request)
     user = Post.objects.filter(id=id).last()
@@ -377,7 +391,8 @@ def likers_user(request, id):
 
     return render(request, "likers_user.html", context)
 
-#email imputunu acmag ucun
+
+# email imputunu acmag ucun
 class ForgetPassword(generic.FormView):
     template_name = "forgetpassword.html"
     success_url = "/"
@@ -397,7 +412,7 @@ class ForgetPassword(generic.FormView):
             return super(ForgetPassword, self).form_valid(form)
 
 
-#parolu deyishmek ucun
+# parolu deyishmek ucun
 class Forget_Password(generic.View):
 
     def get(self, request, user_id, token):
@@ -433,3 +448,27 @@ class Forget_Password(generic.View):
                     return redirect("/")
         else:
             return redirect("/")
+
+
+def about(request):
+    context = common(request)
+    context["about"] = About.objects.last()
+
+    return render(request, "page-about.html", context)
+
+
+def contact_view(request):
+    context = common(request)
+    context["contact"] = Contactus.objects.all()
+    context["contactmenu"]=Contactmenu.objects.last()
+    context["form"] = Contact()
+    if request.method=="POST":
+        form=Contact(request.POST)
+        if form.is_valid():
+            user=form.save(commit=False)
+            user.save()
+            return redirect('contact')
+        else:
+            context["form"]=Contact()
+
+    return render(request, "page-contact.html", context)

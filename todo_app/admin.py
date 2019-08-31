@@ -18,6 +18,13 @@ admin.site.register(Verification)
 admin.site.register(Socialsetting)
 admin.site.register(Profileicon)
 admin.site.register(Follow)
+admin.site.register(About)
+admin.site.register(Contactus)
+admin.site.register(Contactform)
+admin.site.register(Contactmenu)
+
+
+
 
 
 

@@ -190,14 +190,6 @@ def explore(request):
     pagination = Paginator(Post.objects.all(), 6)
     context["post"] = pagination.get_page(request.GET.get('page', 1))
     context["page_range"] = pagination.page_range
-    if "q" in request.POST:
-        query = request.GET.get('q')
-        context["post"] = Post.objects.filter(
-            Q(get_user_model_icontains=query |
-            Q(user__username__icontains=query) |
-            Q(user__first_name__icontains=query) &
-            Q(user__last_name__icontains=query)
-        )
     if request.method == "POST" and request.is_ajax():
         post_id = request.POST.get("post_id")
         post = Post.objects.filter(id=post_id).last()

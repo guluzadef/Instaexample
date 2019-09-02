@@ -2,6 +2,7 @@ from django.core.mail import send_mail
 from django.core.mail import EmailMultiAlternatives
 
 from django.conf import settings
+
 def send_verification_email(email,link):
 
     subject, from_email, to = 'Verificate Email', settings.EMAIL_HOST_USER, email
@@ -10,7 +11,7 @@ def send_verification_email(email,link):
     msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
     msg.attach_alternative(html_content, "text/html")
     msg.send()
-    pass
+    return "Success"
 
 
 def send_forget_password(email,link):
@@ -36,8 +37,9 @@ def send_forget_password(email,link):
                             <!-- Button : END -->
                         </td>
                     </tr>
-                    """.format("http://localhost:8020/" +link
+                    """.format("http://localhost:8020" +link
                                )
     msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
     msg.attach_alternative(html_content, "text/html")
     msg.send()
+    pass

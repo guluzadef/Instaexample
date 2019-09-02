@@ -2,7 +2,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth import get_user_model
 from todo_app.models import Verification
-from todo_app.tasks import send_verification_email
+from todo_app.tasks import send_verification_email,send_forget_password
 from threading import Thread
 #
 User = get_user_model()
@@ -14,9 +14,9 @@ def create_token(**kwargs):
     if created:
         Verification.objects.create(
             user=instance
-
         )
-@receiver(post_save, sender=Verification, dispatch_uid='send_mail_to_user ')
+
+@receiver(post_save, sender=Verification, dispatch_uid='send_mail_to_user')
 def send_mail_to_user(**kwargs):
     instance = kwargs.get("instance")
     created = kwargs.get("created")
@@ -25,3 +25,12 @@ def send_mail_to_user(**kwargs):
         background_job=Thread(target=send_verification_email,args=(instance.user.email,link))
         background_job.start()
 
+
+# @receiver(post_save, sender=Verification, dispatch_uid='send_mail_to_user')
+# def send_mail_to_user(**kwargs):
+#     instance = kwargs.get("instance")
+#     created = kwargs.get("created")
+#     if created:
+#         link = f"http://localhost:8020/changepassword/{instance.token}/{instance.user.id}"
+#         background_job = Thread(target=send_forget_password, args=(instance.user.email, link))
+#         background_job.start()

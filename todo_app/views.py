@@ -76,10 +76,12 @@ def register_view(request):
             messages.success(
                 request, "Emailinizi tesdiqleyin"
             )
+            return redirect("home")
         else:
+            messages.error(request,"Password is not match")
             context["form"] = form
 
-    return redirect("home")
+    return redirect('home')
 
 
 def verify_view(request, token, user_id):
@@ -92,6 +94,7 @@ def verify_view(request, token, user_id):
         messages.info(
             request, "Success"
         )
+        login(request, verify.user)
         return redirect('settings_view')
     else:
         return redirect('home')
@@ -215,6 +218,15 @@ def explore(request):
                     "like_count": post.like_count,
                     "status": True
                 })
+    if 'q' in request.GET:
+        query = request.GET.get('q')
+        explore = Post.objects.filter(
+            Q(user__username__icontains=query) |
+            Q(user__first_name__icontains=query)
+        )
+        pagination = Paginator(explore, 8)
+        context['post'] = pagination.get_page(request.GET.get('page', 1))
+
     return render(request, "explore-style1.html", context)
 
 
@@ -406,7 +418,6 @@ class ForgetPassword(generic.FormView):
 
 # parolu deyishmek ucun
 class Forget_Password(generic.View):
-
     def get(self, request, user_id, token):
         verify = Verification.objects.filter(
             user_id=user_id,

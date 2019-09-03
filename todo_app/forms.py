@@ -143,3 +143,29 @@ class Contact(forms.ModelForm):
        }
 
 
+class Security(forms.Form):
+    CurrentPassword = forms.CharField(widget=forms.PasswordInput(
+        attrs={
+            "class": "form-control"
+        }
+
+    ))
+    Newpassword = forms.CharField(widget=forms.PasswordInput(
+        attrs={
+            "class": "form-control"
+        }
+
+    ))
+    ConfirmPassword = forms.CharField(widget=forms.PasswordInput(
+        attrs={
+            "class": "form-control"
+        }
+
+    ))
+    def clean(self):
+        password1 = self.cleaned_data.get("NewPassword")
+        password2 = self.cleaned_data.get("ConfirmPassword")
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError(
+                "Password not match"
+            )

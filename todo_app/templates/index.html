@@ -4,16 +4,19 @@
 {% load static %}
 {% block title %} Home {% endblock %}
 {% block body %}
-    {% if messages %}
-
-        {% for message in messages %}
-            <div class="alert alert-success">
-                {{ message }}
-            </div>
-        {% endfor %}
+    {##}
 
 
-    {% endif %}
+    {#    {% if messages %}#}
+    {##}
+    {#        {% for message in messages %}#}
+    {#            <div class="alert alert-success">#}
+    {#                {{ message }}#}
+    {#            </div>#}
+    {#        {% endfor %}#}
+    {##}
+    {##}
+    {#    {% endif %}#}
 
     {% if  not request.user.is_authenticated %}
 
@@ -105,7 +108,7 @@
             {% endfor %}
 
 
-            <p><a href="{% url "forgetpswd"  %}">Forgot your password?</a></p>
+            <p><a href="{% url "forgetpswd" %}">Forgot your password?</a></p>
 
             <div class="row">
                 <div class="col-xs-6">
@@ -141,7 +144,6 @@
 </header>
 
 
-    </main>
 {% endblock %}
 <!-- END Main container -->
 

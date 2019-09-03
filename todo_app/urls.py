@@ -5,6 +5,7 @@ urlpatterns = [
     path('verify/<str:token>/<int:user_id>', verify_view, name="verify_view"),
     path('changepassword/<str:token>/<int:user_id>/', Forget_Password.as_view(), name="forget_view"),
     path('forgetpswd/', ForgetPassword.as_view(), name="forgetpswd"),
+    path('security/', security, name="security"),
     path('register/', register_view, name="register_view"),
     path('login/', login_view, name="login_view"),
     path('settings/', settings_view, name="settings_view"),

@@ -13,7 +13,7 @@ from sqlparse.sql import Token
 
 from todo_app.tasks import send_forget_password, send_verification_email
 from .models import *
-from .forms import RegisterForm, LoginForm, PostForm, CommentForm, SocialForm, ForgetPass, PasswordChangeForm, Contact
+from .forms import RegisterForm, LoginForm, PostForm, CommentForm, SocialForm, ForgetPass, PasswordChangeForm, Contact,Security
 from django.contrib import messages
 from django.contrib.auth import get_user_model, authenticate, login, logout
 from custom_user.forms import MyUserChangeForm, MyUserCreationForm
@@ -107,14 +107,16 @@ def login_view(request):
             username = form.cleaned_data.get("username")
             password = request.POST.get("password")
             user = authenticate(username=username, password=password)
+            print(user)
             if user:
                 if user.is_active:
                     login(request, user)
                     return redirect("settings_view")
-                else:
-                    messages.error(
-                        request, "Username or Password inValid"
-                    )
+            else:
+                messages.error(
+                    request, "Username or Password inValid"
+                )
+
             return redirect("home")
         return render(request, "index.html")
 
@@ -137,7 +139,7 @@ def social_settings(request):
             messages.success(
                 request, "Succes"
             )
-            return redirect('socialsetting')
+            return redirect('home')
 
     return render(request, "setting-socials.html", context)
 
@@ -398,8 +400,9 @@ def likers_user(request, id):
 
 # email imputunu acmag ucun
 class ForgetPassword(generic.FormView):
-    template_name = "forgetpassword.html"
+    template_name = "user-forget-pass.html"
     success_url = "/"
+    extra_context = common(request)
     form_class = ForgetPass
 
     def form_valid(self, form):
@@ -425,9 +428,9 @@ class Forget_Password(generic.View):
             expire=False
         ).last()
         if verify:
-            context = {}
+            context = common(request)
             context["form"] = PasswordChangeForm()
-            return render(request, "forgetpassword.html", context)
+            return render(request, "user-forget-pass.html", context)
         else:
             return redirect("/")
 
@@ -475,3 +478,18 @@ def contact_view(request):
             context["form"]=Contact()
 
     return render(request, "page-contact.html", context)
+
+#change password
+def security(request):
+    context=common(request)
+    context["form"]=Security()
+
+    if request.method == "POST":
+        form = Security(request.POST)
+        if form.is_valid():
+            check = request.user.check_password(form.cleaned_data.get("CurrentPassword"))
+            if check:
+                request.user.set_password(form.cleaned_data.get("Newpassword"))
+                request.user.save()
+
+    return render(request,"setting-security.html",context)

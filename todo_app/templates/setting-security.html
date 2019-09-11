@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
+{% load widget_tweaks %}
 {% block title %} Settings {% endblock %}
 
-<!-- Main container -->
 {% block body %}
     <main>
         <!-- Page links -->
@@ -22,36 +22,32 @@
             <div class="container">
                 <header class="section-header">
                     <span>Settings</span>
-                    <h3>Social medias profiles</h3>
-                    <p>Update your facebook, twitter, linkedin, etc. address</p>
+                    <h3>Security settings</h3>
+                    <p>Update your password with new one</p>
                 </header>
-            {% if messages %}
-                {% for msj in messages %}
-                    <h1>{{ msj }}</h1>
-                {% endfor %}
-            {% endif %}
-
 
                 <div class="row">
                     <div class="col-xs-12">
                         <div class="card">
                             <div class="card-header">
-                                <h6>Social pages</h6>
+                                <h6>Change password</h6>
                             </div>
-                            <div class="card-block">
-                                <form class="form-horizontal" method="post" action="{% url 'socialsetting' %}">
-                                    {% csrf_token %}
-                                    {% for field in socialform %}
-                                        <div class="form-group" style="width: 30%">
-                                            <label for="{{ field.id_for_label }}" class="col-sm-2 control-label " >{{ field.label }}</label>
-                                            {{ field }}
-                                        </div>
-                                    {% endfor %}
 
-                                    <button type="submit" class="btn btn-success">Save</button>
+                            <div class="card-block">
+                                <form class="form-horizontal" method="post">
+                                    {% csrf_token %}
+
+                                    <div class="form-group">
+                                        {% for field in form %}
+                                            <div class="form-group">
+                                                <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
+                                                {{ field|add_class:"form-control" }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" type="submit">Save changes</button>
 
                                 </form>
-
                             </div>
                         </div>
                     </div>
@@ -63,5 +59,6 @@
 
     </main>
     <!-- END Main container -->
+
 
 {% endblock %}

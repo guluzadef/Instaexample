@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% load static %}
+{% block body %}
+
+<!-- Main container -->
+<main>
+
+    <section class="no-border-bottom section-sm">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-6 col-sm-offset-3 col-lg-4 col-lg-offset-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6>Password recovery</h6>
+                        </div>
+
+                        <div class="card-block">
+                            <br>
+                            <form method="post">
+                                {% csrf_token %}
+                                {% for field in form %}
+                                    <div class="form-group">
+                                        <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
+                                        {{ field|add_class:"form-control" }}
+                                    </div>
+                                {% endfor %}
+
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </form>
+                            <br>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="row text-center">
+                                <div class="col-xs-6">
+                                    <a href="{% url 'home' %}">Login</a>
+                                </div>
+
+                                <div class="col-xs-6">
+                                    <a href="{% url 'home' %}">Register</a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+</main>
+<!-- END Main container -->
+
+{% endblock %}
